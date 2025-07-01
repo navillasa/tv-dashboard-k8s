@@ -11,6 +11,17 @@ CLUSTER_NAME ?= tv-dashboard-gke
 BACKEND_IMAGE ?= gcr.io/$(PROJECT_ID)/tv-dashboard-backend:latest
 FRONTEND_IMAGE ?= gcr.io/$(PROJECT_ID)/tv-dashboard-frontend:latest
 
+# --- Check Dependencies ---
+.PHONY: check_deps install install-deps
+
+check_deps:
+	@command -v terraform >/dev/null 2>&1 || { \
+		echo "Terraform not found. Install it from https://developer.hashicorp.com/terraform/downloads"; exit 1; }
+	@command -v kubectl >/dev/null 2>&1 || { \
+		echo "kubectl not found. Install it from https://kubernetes.io/docs/tasks/tools/"; exit 1; }
+	@command -v gcloud >/dev/null 2>&1 || { \
+		echo "Google Cloud SDK not found. Install it from https://cloud.google.com/sdk/docs/install"; exit 1; }
+
 # --- Install Dependencies ---
 install:
 	@echo "Installing system dependencies (Ubuntu/Debian only)..."
