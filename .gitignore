@@ -1,2 +1,7 @@
 running-notes.md
-
+.terraform.lock.hcl
+.terraform/
+gke_gcloud_auth_plugin_cache
+kubeconfig.yaml
+terraform.tfstate
+terraform.tfstate.backup

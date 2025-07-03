@@ -14,6 +14,7 @@ resource "google_container_cluster" "primary" {
   # Cheapest (zonal, no control plane fee)
   network    = "default"
   subnetwork = "default"
+  deletion_protection = false
 }
 
 resource "google_container_node_pool" "primary_nodes" {
@@ -21,7 +22,7 @@ resource "google_container_node_pool" "primary_nodes" {
   location   = var.zone
   cluster    = google_container_cluster.primary.name
 
-  node_count = 2
+  node_count = 1
 
   node_config {
     preemptible  = true
