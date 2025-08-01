@@ -18,6 +18,7 @@ services:
     environment:
       - PORT=4000
       - DATABASE_URL=postgres://postgres:postgres@db:5432/tvshows
+      - TMDB_API_KEY=${TMDB_API_KEY}
     depends_on:
       - db
     ports:

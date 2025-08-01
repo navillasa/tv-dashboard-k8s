@@ -1,19 +1,39 @@
 import { Show } from "../services/showAggregator";
 
-// Stub for API #1 (e.g., TMDB)
+const TMDB_API_KEY = process.env.TMDB_API_KEY;
+
+const PLATFORM_PROVIDER_IDS: Record<string, number> = {
+  netflix: 8,
+  hulu: 15,
+  amazon: 9,
+  disney: 337,
+};
+
 export async function fetchFromApiOne(platforms: string[]): Promise<Show[]> {
-  // TODO: Replace this with real API logic
-  // For now, return sample data
-  const sample: Show[] = [
-    {
-      id: "1",
-      title: "Sample Netflix Show",
-      platform: "netflix",
-      airDate: "2025-07-01",
-      posterUrl: "",
-      trailerUrl: "",
-      description: "A show from API One."
-    }
-  ];
-  return platforms.length ? sample.filter(s => platforms.includes(s.platform)) : sample;
+  if (!TMDB_API_KEY) {
+    throw new Error("TMDB_API_KEY is missing from environment variables.");
+  }
+
+  const validPlatforms = platforms.filter(p => PLATFORM_PROVIDER_IDS[p]);
+  if (!validPlatforms.length) return [];
+
+  const results = await Promise.all(
+    validPlatforms.map(async (platform) => {
+      const providerId = PLATFORM_PROVIDER_IDS[platform];
+      const url = `https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_API_KEY}&sort_by=popularity.desc&with_watch_providers=${providerId}&watch_region=US&page=1&language=en-US`;
+      const res = await fetch(url);
+      const data = await res.json();
+
+      return (data.results || []).slice(0, 15).map((show: any) => ({
+        id: show.id.toString(),
+        title: show.name,
+        platform,
+        airDate: show.first_air_date,
+        posterUrl: show.poster_path ? `https://image.tmdb.org/t/p/w500${show.poster_path}` : "",
+        trailerUrl: "",
+        description: show.overview,
+      }));
+    })
+  );
+  return results.flat();
 }
