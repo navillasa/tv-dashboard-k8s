@@ -1,5 +1,6 @@
 import { fetchFromApiOne } from "../clients/apiOne";
 import { fetchFromApiTwo } from "../clients/apiTwo";
+import { getCachedShows, saveShows } from "../db/shows";
 
 export interface Show {
   id: string;
@@ -11,18 +12,28 @@ export interface Show {
   description?: string;
 }
 
-// platforms: array of strings, e.g. ["netflix", "disney"]
+const CACHE_MAX_AGE_MINUTES = 30;
+
 export async function getUpcomingShows(platforms: string[] = []): Promise<Show[]> {
-  // Fetch from both APIs
+  const cached = await getCachedShows(platforms, CACHE_MAX_AGE_MINUTES);
+
+  // check if cache covers all requested platforms
+  const hasAllPlatforms =
+    platforms.length === 0 ||
+    platforms.every(p => cached.some(show => show.platform === p));
+
+  if (cached.length > 0 && hasAllPlatforms) {
+    // return cache if all platforms are covered and fresh
+    return cached;
+  }
+
   const [apiOneShows, apiTwoShows] = await Promise.all([
     fetchFromApiOne(platforms),
     fetchFromApiTwo(platforms)
   ]);
 
-  // Example: Merge, deduplicate, and sort by air date
   const allShows = [...apiOneShows, ...apiTwoShows];
 
-  // Deduplicate (by title + platform for demo, but real logic might be more complex)
   const uniqueShows = allShows.filter(
     (show, idx, arr) =>
       arr.findIndex(
@@ -30,8 +41,10 @@ export async function getUpcomingShows(platforms: string[] = []): Promise<Show[]
       ) === idx
   );
 
-  // Sort by airDate ascending
+  // sort by airDate ascending
   uniqueShows.sort((a, b) => a.airDate.localeCompare(b.airDate));
+
+  await saveShows(uniqueShows);
 
   return uniqueShows;
 }
