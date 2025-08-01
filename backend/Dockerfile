@@ -3,9 +3,14 @@ FROM node:20-alpine
 WORKDIR /app
 
 COPY package*.json ./
+COPY tsconfig.json ./
+COPY .env ./
+
+COPY wait-for-it.sh ./
+RUN chmod +x wait-for-it.sh
+
 RUN npm install
 
-COPY tsconfig.json ./
 COPY src ./src
 
 RUN npm run build
