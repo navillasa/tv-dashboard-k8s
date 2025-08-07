@@ -48,18 +48,18 @@ services:
     build: ./backend
     command: npm run lint
 
-#  frontend:
-#    build:
-#      context: ./frontend
-#    environment:
-#      - VITE_API_URL=http://localhost:4000/api
-#    depends_on:
-#      - backend
-#    ports:
-#      - "3000:3000"
-#    volumes:
-#      - ./frontend:/app
-#      - /app/node_modules
+  frontend:
+    build:
+      context: ./frontend
+    environment:
+      - VITE_API_URL=http://localhost:4000/api
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
 
 volumes:
   db_data:

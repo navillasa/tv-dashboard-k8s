@@ -34,3 +34,17 @@ jobs:
       - name: Show backend_test logs if it fails
         if: failure()
         run: docker compose logs backend_test
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    services:
+      frontend:
+        image: tv-dashboard-k8s-frontend
+        ports:
+          - 3000:80
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Healthcheck frontend
+        run: ./frontend/healthcheck.sh http://localhost:3000
