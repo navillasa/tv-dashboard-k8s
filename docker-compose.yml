@@ -19,7 +19,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - db_test_data:/var/lib/postgresql/data
 
@@ -43,6 +43,10 @@ services:
     depends_on:
       - db_test
     command: ["./wait-for-it.sh", "db_test:5432", "--", "npm", "test"]
+
+  lint:
+    build: ./backend
+    command: npm run lint
 
 #  frontend:
 #    build:
