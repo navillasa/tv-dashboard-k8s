@@ -25,12 +25,17 @@ function App() {
     async function fetchShows() {
       setLoading(true);
       try {
-        const params = platformFilter.length
-          ? { platform: platformFilter.join(",") }
-          : {};
-        const { data } = await axios.get<Show[]>("/api/shows/upcoming", {
-          params
-        });
+        // Always send ALL platforms if none selected
+        const selected =
+          platformFilter.length > 0
+            ? platformFilter
+            : PLATFORMS.map(p => p.key);
+        const params = { platform: selected.join(",") };
+        console.log("Requesting with params:", params);
+
+        const { data } = await axios.get("/api/shows/upcoming", { params });
+        console.log("API response:", data);
+
         setShows(data);
       } catch (e) {
         setShows([]);

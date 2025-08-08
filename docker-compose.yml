@@ -26,9 +26,10 @@ services:
   backend:
     build:
       context: ./backend
+    env_file: .env
     environment:
       - PORT=4000
-      - DATABASE_URL=postgres://postgres:postgres@db:5432/tvshows
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       - TMDB_API_KEY=${TMDB_API_KEY}
     depends_on:
       - db

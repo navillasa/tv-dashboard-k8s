@@ -5,7 +5,6 @@ WORKDIR /app
 COPY package*.json ./
 COPY tsconfig.json ./
 COPY .eslintrc.json ./
-COPY .env ./
 
 COPY wait-for-it.sh ./
 RUN chmod +x wait-for-it.sh
