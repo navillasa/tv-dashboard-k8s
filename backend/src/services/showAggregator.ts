@@ -16,21 +16,24 @@ const CACHE_MAX_AGE_MINUTES = 30;
 
 export async function getUpcomingShows(platforms: string[] = []): Promise<Show[]> {
   const cached = await getCachedShows(platforms, CACHE_MAX_AGE_MINUTES);
+  console.log('Cached shows:', cached);
 
-  // check if cache covers all requested platforms
   const hasAllPlatforms =
     platforms.length === 0 ||
     platforms.every(p => cached.some(show => show.platform === p));
 
   if (cached.length > 0 && hasAllPlatforms) {
-    // return cache if all platforms are covered and fresh
+    console.log('Returning cached shows');
     return cached;
   }
 
+  console.log('Fetching from APIs...');
   const [apiOneShows, apiTwoShows] = await Promise.all([
     fetchFromApiOne(platforms),
     fetchFromApiTwo(platforms)
   ]);
+  console.log('apiOneShows:', apiOneShows);
+  console.log('apiTwoShows:', apiTwoShows);
 
   const allShows = [...apiOneShows, ...apiTwoShows];
 

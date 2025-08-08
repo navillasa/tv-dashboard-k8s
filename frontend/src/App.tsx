@@ -11,9 +11,15 @@ type Show = {
   trailerUrl?: string;
 };
 
-const PLATFORMS = [
+// List ALL possible platforms for columns
+const ALL_PLATFORMS = [
   { key: "netflix", label: "Netflix" },
-  { key: "disney", label: "Disney+" }
+  { key: "disney", label: "Disney+" },
+  { key: "prime", label: "Prime Video" },
+  { key: "hulu", label: "Hulu" },
+  { key: "apple", label: "Apple TV+" },
+  { key: "max", label: "Max" },
+  { key: "paramount", label: "Paramount+" },
 ];
 
 function App() {
@@ -25,17 +31,13 @@ function App() {
     async function fetchShows() {
       setLoading(true);
       try {
-        // Always send ALL platforms if none selected
         const selected =
           platformFilter.length > 0
             ? platformFilter
-            : PLATFORMS.map(p => p.key);
+            : ALL_PLATFORMS.map(p => p.key);
         const params = { platform: selected.join(",") };
-        console.log("Requesting with params:", params);
 
         const { data } = await axios.get("/api/shows/upcoming", { params });
-        console.log("API response:", data);
-
         setShows(data);
       } catch (e) {
         setShows([]);
@@ -46,17 +48,35 @@ function App() {
     fetchShows();
   }, [platformFilter]);
 
+  // Group shows by platform
+  const showsByPlatform: Record<string, Show[]> = {};
+  ALL_PLATFORMS.forEach(p => {
+    showsByPlatform[p.key] = [];
+  });
+  shows.forEach(show => {
+    if (showsByPlatform[show.platform]) {
+      showsByPlatform[show.platform].push(show);
+    }
+  });
+
   const togglePlatform = (key: string) => {
     setPlatformFilter((prev) =>
       prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
     );
   };
 
+  const [expandedShowIds, setExpandedShowIds] = useState<string[]>([]);
+  const toggleDescription = (id: string) => {
+    setExpandedShowIds(prev =>
+      prev.includes(id) ? prev.filter(_id => _id !== id) : [...prev, id]
+    );
+  };
+
   return (
-    <div style={{ maxWidth: 900, margin: "2rem auto", padding: "1rem" }}>
+    <div style={{ maxWidth: 1200, margin: "2rem auto", padding: "1rem" }}>
       <h1 style={{ textAlign: "center" }}>📺 New & Upcoming TV Shows</h1>
       <div style={{ display: "flex", gap: 8, marginBottom: 24, justifyContent: "center" }}>
-        {PLATFORMS.map((p) => (
+        {ALL_PLATFORMS.map((p) => (
           <button
             key={p.key}
             onClick={() => togglePlatform(p.key)}
@@ -82,39 +102,68 @@ function App() {
         <div
           style={{
             display: "grid",
-            gap: 16,
-            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))"
+            gap: 24,
+            gridTemplateColumns: `repeat(${ALL_PLATFORMS.length}, 1fr)`
           }}
         >
-          {shows.length === 0 && <p>No shows found.</p>}
-          {shows.map((show) => (
-            <div
-              key={show.id}
-              style={{
-                border: "1px solid #eee",
-                borderRadius: 10,
-                padding: 16,
-                background: "#fafbfc"
-              }}
-            >
-              <div style={{ fontWeight: "bold", fontSize: 18 }}>
-                {show.title}
-              </div>
-              <div style={{ color: "#666", marginBottom: 4 }}>
-                {show.platform.charAt(0).toUpperCase() + show.platform.slice(1)}
-              </div>
-              <div>Air Date: {show.airDate}</div>
-              {show.posterUrl && (
-                <img
-                  src={show.posterUrl}
-                  alt={show.title}
-                  style={{ width: "100%", marginTop: 8, borderRadius: 8 }}
-                />
-              )}
-              {show.description && (
-                <div style={{ marginTop: 8, fontSize: 14, color: "#444" }}>
-                  {show.description}
-                </div>
+          {ALL_PLATFORMS.map((platform) => (
+            <div key={platform.key}>
+              <h2 style={{ textAlign: "center", marginBottom: 16 }}>
+                {platform.label}
+              </h2>
+              {showsByPlatform[platform.key].length === 0 ? (
+                <p style={{ textAlign: "center", color: "#aaa" }}>No shows found.</p>
+              ) : (
+                showsByPlatform[platform.key].map((show) => (
+                  <div
+                    key={show.id}
+                    style={{
+                      border: "1px solid #eee",
+                      borderRadius: 10,
+                      padding: 16,
+                      background: "#fafbfc",
+                      marginBottom: 16,
+                      position: "relative"
+                    }}
+                  >
+                    <div style={{ fontWeight: "bold", fontSize: 18 }}>
+                      {show.title}
+                    </div>
+                    <div style={{ color: "#666", marginBottom: 4 }}>
+                      Air Date: {show.airDate}
+                    </div>
+                    {show.posterUrl && (
+                      <img
+                        src={show.posterUrl}
+                        alt={show.title}
+                        style={{ width: "100%", marginTop: 8, borderRadius: 8 }}
+                      />
+                    )}
+                    {show.description && (
+                      <button
+                        onClick={() => toggleDescription(show.id)}
+                        style={{
+                          marginTop: 8,
+                          fontSize: 13,
+                          color: "#0070f3",
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          textDecoration: "underline"
+                        }}
+                      >
+                        {expandedShowIds.includes(show.id)
+                          ? "Hide Description"
+                          : "Show Description"}
+                      </button>
+                    )}
+                    {show.description && expandedShowIds.includes(show.id) && (
+                      <div style={{ marginTop: 8, fontSize: 14, color: "#444" }}>
+                        {show.description}
+                      </div>
+                    )}
+                  </div>
+                ))
               )}
             </div>
           ))}
