@@ -4,15 +4,24 @@ const PLATFORM_NETWORKS: Record<string, string> = {
   netflix: "Netflix",
   hulu: "Hulu",
   amazon: "Amazon Prime",
-  disney: "Disney+"
+  prime: "Amazon Prime",
+  disney: "Disney+",
+  disneyplus: "Disney+",
+  apple: "Apple TV+",
+  appletv: "Apple TV+",
+  appletvplus: "Apple TV+",
+  max: "Max",
+  hbomax: "HBO Max",
+  paramount: "Paramount+",
+  paramountplus: "Paramount+"
 };
 
 export async function fetchFromApiTwo(platforms: string[]): Promise<Show[]> {
-  const validPlatforms = platforms.filter(p => PLATFORM_NETWORKS[p]);
+  const validPlatforms = platforms
+    .map(p => p.toLowerCase())
+    .filter(p => PLATFORM_NETWORKS[p]);
   if (!validPlatforms.length) return [];
 
-  // get all shows, filter by network
-  // using the shows schedule API for upcoming shows
   const res = await fetch("https://api.tvmaze.com/schedule?country=US");
   const data = await res.json();
 
@@ -20,6 +29,7 @@ export async function fetchFromApiTwo(platforms: string[]): Promise<Show[]> {
   for (const showEntry of data) {
     const show = showEntry.show;
     if (!show.network) continue;
+    // Find platform key by network name
     const platform = Object.entries(PLATFORM_NETWORKS).find(
       ([, networkName]) => show.network.name === networkName
     )?.[0];

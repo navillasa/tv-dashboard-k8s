@@ -2,11 +2,21 @@ import { Show } from "../services/showAggregator";
 
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
 
+// Map frontend keys to TMDB provider IDs
 const PLATFORM_PROVIDER_IDS: Record<string, number> = {
   netflix: 8,
   hulu: 15,
   amazon: 9,
+  prime: 9,
   disney: 337,
+  disneyplus: 337,
+  apple: 255,
+  appletv: 255,
+  appletvplus: 255,
+  max: 384,
+  hbomax: 384,
+  paramount: 531,
+  paramountplus: 531
 };
 
 export async function fetchFromApiOne(platforms: string[]): Promise<Show[]> {
@@ -14,7 +24,9 @@ export async function fetchFromApiOne(platforms: string[]): Promise<Show[]> {
     throw new Error("TMDB_API_KEY is missing from environment variables.");
   }
 
-  const validPlatforms = platforms.filter(p => PLATFORM_PROVIDER_IDS[p]);
+  const validPlatforms = platforms
+    .map(p => p.toLowerCase())
+    .filter(p => PLATFORM_PROVIDER_IDS[p]);
   if (!validPlatforms.length) return [];
 
   const results = await Promise.all(

@@ -15,12 +15,15 @@ export interface Show {
 const CACHE_MAX_AGE_MINUTES = 30;
 
 export async function getUpcomingShows(platforms: string[] = []): Promise<Show[]> {
-  const cached = await getCachedShows(platforms, CACHE_MAX_AGE_MINUTES);
+  // Always normalize platform keys to lowercase
+  const platformsNormalized = platforms.map(p => p.toLowerCase());
+
+  const cached = await getCachedShows(platformsNormalized, CACHE_MAX_AGE_MINUTES);
   console.log('Cached shows:', cached);
 
   const hasAllPlatforms =
-    platforms.length === 0 ||
-    platforms.every(p => cached.some(show => show.platform === p));
+    platformsNormalized.length === 0 ||
+    platformsNormalized.every(p => cached.some(show => show.platform === p));
 
   if (cached.length > 0 && hasAllPlatforms) {
     console.log('Returning cached shows');
@@ -29,8 +32,8 @@ export async function getUpcomingShows(platforms: string[] = []): Promise<Show[]
 
   console.log('Fetching from APIs...');
   const [apiOneShows, apiTwoShows] = await Promise.all([
-    fetchFromApiOne(platforms),
-    fetchFromApiTwo(platforms)
+    fetchFromApiOne(platformsNormalized),
+    fetchFromApiTwo(platformsNormalized)
   ]);
   console.log('apiOneShows:', apiOneShows);
   console.log('apiTwoShows:', apiTwoShows);
