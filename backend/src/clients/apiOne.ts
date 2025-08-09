@@ -16,7 +16,7 @@ const PLATFORM_PROVIDER_IDS: Record<string, number> = {
   max: 384,
   hbomax: 384,
   paramount: 531,
-  paramountplus: 531
+  paramountplus: 531,
 };
 
 export async function fetchFromApiOne(platforms: string[]): Promise<Show[]> {
@@ -32,20 +32,26 @@ export async function fetchFromApiOne(platforms: string[]): Promise<Show[]> {
   const results = await Promise.all(
     validPlatforms.map(async (platform) => {
       const providerId = PLATFORM_PROVIDER_IDS[platform];
-      const url = `https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_API_KEY}&sort_by=popularity.desc&with_watch_providers=${providerId}&watch_region=US&page=1&language=en-US`;
+      // Removed watch_region=US for broader results
+      const url = `https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_API_KEY}&sort_by=popularity.desc&with_watch_providers=${providerId}&page=1&language=en-US`;
       const res = await fetch(url);
       const data = await res.json();
 
-      return (data.results || []).slice(0, 15).map((show: any) => ({
-        id: show.id.toString(),
-        title: show.name,
-        platform,
-        airDate: show.first_air_date,
-        posterUrl: show.poster_path ? `https://image.tmdb.org/t/p/w500${show.poster_path}` : "",
-        trailerUrl: "",
-        description: show.overview,
-      }));
+      // Map to camelCase to match frontend expectations!
+      return (data.results || [])
+        .filter((show: any) => !!show.poster_path)
+        .slice(0, 15)
+        .map((show: any) => ({
+          id: show.id.toString(),
+          title: show.name,
+          platform,
+          airDate: show.first_air_date,
+          posterUrl: show.poster_path ? `https://image.tmdb.org/t/p/w500${show.poster_path}` : "",
+          trailerUrl: "",
+          description: show.overview,
+        }));
     })
   );
+  // Flatten results for all platforms
   return results.flat();
 }

@@ -38,7 +38,16 @@ function App() {
         const params = { platform: selected.join(",") };
 
         const { data } = await axios.get("/api/shows/upcoming", { params });
-        setShows(data);
+
+        // Map snake_case response to camelCase fields for frontend
+        setShows(
+          data.map((show: any) => ({
+            ...show,
+            airDate: show.air_date,
+            posterUrl: show.poster_url,
+            trailerUrl: show.trailer_url,
+          }))
+        );
       } catch (e) {
         setShows([]);
       } finally {
@@ -116,7 +125,7 @@ function App() {
               ) : (
                 showsByPlatform[platform.key].map((show) => (
                   <div
-                    key={show.id}
+                    key={show.id + show.platform}
                     style={{
                       border: "1px solid #eee",
                       borderRadius: 10,

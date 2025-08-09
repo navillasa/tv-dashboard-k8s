@@ -1,19 +1,15 @@
 import { Show } from "../services/showAggregator";
 
+// Map platform keys to TVmaze provider names
 const PLATFORM_NETWORKS: Record<string, string> = {
   netflix: "Netflix",
   hulu: "Hulu",
   amazon: "Amazon Prime",
   prime: "Amazon Prime",
   disney: "Disney+",
-  disneyplus: "Disney+",
   apple: "Apple TV+",
-  appletv: "Apple TV+",
-  appletvplus: "Apple TV+",
   max: "Max",
-  hbomax: "HBO Max",
-  paramount: "Paramount+",
-  paramountplus: "Paramount+"
+  paramount: "Paramount+"
 };
 
 export async function fetchFromApiTwo(platforms: string[]): Promise<Show[]> {
@@ -22,17 +18,17 @@ export async function fetchFromApiTwo(platforms: string[]): Promise<Show[]> {
     .filter(p => PLATFORM_NETWORKS[p]);
   if (!validPlatforms.length) return [];
 
+  // Get all shows airing soon
   const res = await fetch("https://api.tvmaze.com/schedule?country=US");
   const data = await res.json();
 
   const shows: Show[] = [];
   for (const showEntry of data) {
     const show = showEntry.show;
-    if (!show.network) continue;
-    // Find platform key by network name
-    const platform = Object.entries(PLATFORM_NETWORKS).find(
-      ([, networkName]) => show.network.name === networkName
-    )?.[0];
+    // Check both network and webChannel!
+    const networkName = show.network?.name || show.webChannel?.name;
+    const platform = Object.entries(PLATFORM_NETWORKS)
+      .find(([, name]) => networkName === name)?.[0];
 
     if (platform && validPlatforms.includes(platform)) {
       shows.push({
@@ -47,7 +43,7 @@ export async function fetchFromApiTwo(platforms: string[]): Promise<Show[]> {
     }
   }
 
-  return platforms.flatMap(platform => 
+  return platforms.flatMap(platform =>
     shows.filter(s => s.platform === platform).slice(0, 15)
   );
 }
