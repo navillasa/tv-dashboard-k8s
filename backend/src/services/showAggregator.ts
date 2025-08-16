@@ -28,7 +28,11 @@ export async function getUpcomingShows(platforms: string[] = []): Promise<Show[]
 
   if (cached.length > 0 && hasAllPlatforms) {
     console.log('Returning cached shows');
-    return cached;
+    // Only return shows for requested platforms
+    if (platformsNormalized.length === 0) {
+      return cached;
+    }
+    return cached.filter(show => platformsNormalized.includes(show.platform.toLowerCase()));
   }
 
   console.log('Fetching from APIs...');
@@ -41,6 +45,7 @@ export async function getUpcomingShows(platforms: string[] = []): Promise<Show[]
 
   const allShows = [...apiOneShows, ...apiTwoShows];
 
+  // Deduplicate by title (case-insensitive) + platform
   const uniqueShows = allShows.filter(
     (show, idx, arr) =>
       arr.findIndex(
@@ -48,10 +53,30 @@ export async function getUpcomingShows(platforms: string[] = []): Promise<Show[]
       ) === idx
   );
 
-  // sort by airDate ascending
-  uniqueShows.sort((a, b) => a.airDate.localeCompare(b.airDate));
+  // Group shows by platform and sort by popularity, take top 10 per platform
+  const showsByPlatform: Record<string, Show[]> = {};
+  uniqueShows.forEach(show => {
+    const plat = show.platform.toLowerCase();
+    if (!showsByPlatform[plat]) showsByPlatform[plat] = [];
+    showsByPlatform[plat].push(show);
+  });
 
-  await saveShows(uniqueShows);
+  Object.keys(showsByPlatform).forEach(platform => {
+    showsByPlatform[platform].sort(
+      (a, b) =>
+        (b.popularity ?? 0) - (a.popularity ?? 0) ||
+        (a.airDate || "").localeCompare(b.airDate || "")
+    );
+    showsByPlatform[platform] = showsByPlatform[platform].slice(0, 10);
+  });
 
-  return uniqueShows;
+  // Only save the top shows for all platforms (cache is always all)
+  const allTopShows = Object.values(showsByPlatform).flat();
+  await saveShows(allTopShows);
+
+  // Only return shows for requested platforms
+  if (platformsNormalized.length === 0) {
+    return allTopShows;
+  }
+  return platformsNormalized.flatMap(p => showsByPlatform[p] ?? []);
 }

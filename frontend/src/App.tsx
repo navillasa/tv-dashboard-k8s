@@ -9,6 +9,7 @@ type Show = {
   posterUrl?: string;
   description?: string;
   trailerUrl?: string;
+  popularity?: number;
 };
 
 // List ALL possible platforms for columns
@@ -39,13 +40,15 @@ function App() {
 
         const { data } = await axios.get("/api/shows/upcoming", { params });
 
-        // Map snake_case response to camelCase fields for frontend
         setShows(
           data.map((show: any) => ({
             ...show,
             airDate: show.air_date,
             posterUrl: show.poster_url,
             trailerUrl: show.trailer_url,
+            description: show.description,
+            platform: show.platform,
+            popularity: show.popularity,
           }))
         );
       } catch (e) {
@@ -73,6 +76,7 @@ function App() {
       prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
     );
   };
+  console.log("shows after set:", shows);
 
   const [expandedShowIds, setExpandedShowIds] = useState<string[]>([]);
   const toggleDescription = (id: string) => {
@@ -84,6 +88,9 @@ function App() {
   return (
     <div style={{ maxWidth: 1200, margin: "2rem auto", padding: "1rem" }}>
       <h1 style={{ textAlign: "center" }}>📺 New & Upcoming TV Shows</h1>
+      <h2 style={{ textAlign: "center", color: "#555", fontWeight: 400, marginTop: 0 }}>
+        Most popular new & upcoming TV shows per platform (top 10)
+      </h2>
       <div style={{ display: "flex", gap: 8, marginBottom: 24, justifyContent: "center" }}>
         {ALL_PLATFORMS.map((p) => (
           <button
@@ -138,6 +145,11 @@ function App() {
                     <div style={{ fontWeight: "bold", fontSize: 18 }}>
                       {show.title}
                     </div>
+                    {typeof show.popularity === "number" && (
+                      <div style={{ fontSize: 13, color: "#888", marginBottom: 4 }}>
+                        Popularity: {show.popularity.toFixed(1)}
+                      </div>
+                    )}
                     <div style={{ color: "#666", marginBottom: 4 }}>
                       Air Date: {show.airDate}
                     </div>
