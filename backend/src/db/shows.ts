@@ -28,13 +28,14 @@ export async function saveShows(shows: Show[]): Promise<void> {
     "poster_url",
     "trailer_url",
     "description",
+    "popularity",
     "fetched_at"
   ];
 
   // Build value placeholders for each show
   const valuePlaceholders = shows.map((_, i) => {
     const base = i * columns.length;
-    return `($${base + 1},$${base + 2},$${base + 3},$${base + 4},$${base + 5},$${base + 6},$${base + 7},$${base + 8})`;
+    return `($${base + 1},$${base + 2},$${base + 3},$${base + 4},$${base + 5},$${base + 6},$${base + 7},$${base + 8},$${base +9})`;
   }).join(',');
 
   // Flatten values for query parameters
@@ -46,6 +47,7 @@ export async function saveShows(shows: Show[]): Promise<void> {
     show.posterUrl,
     show.trailerUrl,
     show.description,
+    show.popularity ?? null,
     new Date()
   ]);
 
@@ -58,6 +60,7 @@ export async function saveShows(shows: Show[]): Promise<void> {
        poster_url = EXCLUDED.poster_url,
        trailer_url = EXCLUDED.trailer_url,
        description = EXCLUDED.description,
+       popularity = EXCLUDED.popularity,
        fetched_at = EXCLUDED.fetched_at`
     , values
   );

@@ -10,6 +10,7 @@ export interface Show {
   posterUrl?: string;
   trailerUrl?: string;
   description?: string;
+  popularity?: number;
 }
 
 const CACHE_MAX_AGE_MINUTES = 30;

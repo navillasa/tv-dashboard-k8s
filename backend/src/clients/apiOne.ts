@@ -32,12 +32,16 @@ export async function fetchFromApiOne(platforms: string[]): Promise<Show[]> {
   const results = await Promise.all(
     validPlatforms.map(async (platform) => {
       const providerId = PLATFORM_PROVIDER_IDS[platform];
-      // Removed watch_region=US for broader results
       const url = `https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_API_KEY}&sort_by=popularity.desc&with_watch_providers=${providerId}&page=1&language=en-US`;
       const res = await fetch(url);
       const data = await res.json();
 
-      // Map to camelCase to match frontend expectations!
+      // ---- DEBUG LOG: Compare raw show titles per platform ----
+      console.log("Sample API result:", data.results[0]);
+      console.log(`Platform: ${platform}, Provider ID: ${providerId}, Show Titles:`, data.results.map((s: any) => s.name));
+      // --------------------------------------------------------
+
+      // Map to camelCase for frontend
       return (data.results || [])
         .filter((show: any) => !!show.poster_path)
         .slice(0, 15)
@@ -49,6 +53,7 @@ export async function fetchFromApiOne(platforms: string[]): Promise<Show[]> {
           posterUrl: show.poster_path ? `https://image.tmdb.org/t/p/w500${show.poster_path}` : "",
           trailerUrl: "",
           description: show.overview,
+          popularity: show.popularity,
         }));
     })
   );

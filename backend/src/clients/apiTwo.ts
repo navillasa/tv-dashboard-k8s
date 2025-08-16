@@ -39,6 +39,7 @@ export async function fetchFromApiTwo(platforms: string[]): Promise<Show[]> {
         posterUrl: show.image?.medium || "",
         trailerUrl: "",
         description: show.summary ? show.summary.replace(/<[^>]+>/g, "") : "",
+        popularity: show.popularity,
       });
     }
   }
