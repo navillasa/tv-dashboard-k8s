@@ -13,9 +13,11 @@ const PLATFORM_NETWORKS: Record<string, string> = {
 };
 
 export async function fetchFromApiTwo(platforms: string[]): Promise<Show[]> {
-  const validPlatforms = platforms
-    .map(p => p.toLowerCase())
-    .filter(p => PLATFORM_NETWORKS[p]);
+  const validPlatforms = platforms.length > 0
+    ? platforms
+        .map(p => p.toLowerCase())
+        .filter(p => PLATFORM_NETWORKS[p])
+    : Object.keys(PLATFORM_NETWORKS);
   if (!validPlatforms.length) return [];
 
   // Get all shows airing soon

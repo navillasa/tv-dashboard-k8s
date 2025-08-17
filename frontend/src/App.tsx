@@ -38,7 +38,7 @@ function App() {
             : ALL_PLATFORMS.map(p => p.key);
         const params = { platform: selected.join(",") };
 
-        const { data } = await axios.get("/api/shows/upcoming", { params });
+        const { data } = await axios.get("/api/shows", { params });
 
         setShows(
           data.map((show: any) => ({
@@ -85,6 +85,12 @@ function App() {
     );
   };
 
+  console.log("ALL SHOWS FROM API:", shows);
+  console.log(
+    "COLUMN PLATFORM KEYS:",
+    ALL_PLATFORMS.map((p) => p.key)
+  );
+
   return (
     <div style={{ maxWidth: 1200, margin: "2rem auto", padding: "1rem" }}>
       <h1 style={{ textAlign: "center" }}>📺 New & Upcoming TV Shows</h1>
@@ -130,7 +136,9 @@ function App() {
               {showsByPlatform[platform.key].length === 0 ? (
                 <p style={{ textAlign: "center", color: "#aaa" }}>No shows found.</p>
               ) : (
-                showsByPlatform[platform.key].map((show) => (
+                showsByPlatform[platform.key]
+                  .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
+                  .map((show) => (
                   <div
                     key={show.id + show.platform}
                     style={{

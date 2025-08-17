@@ -1,6 +1,22 @@
 import { fetchFromApiOne } from "../clients/apiOne";
 import { fetchFromApiTwo } from "../clients/apiTwo";
-import { getCachedShows, saveShows } from "../db/shows";
+// import { getCachedShows, saveShows } from "../db/shows"; // Cache temporarily disabled
+
+const PLATFORM_KEY_ALIASES: Record<string, string> = {
+  netflix: "netflix",
+  hulu: "hulu",
+  amazon: "prime",
+  prime: "prime",
+  disney: "disney",
+  disneyplus: "disney",
+  apple: "apple",
+  appletv: "apple",
+  appletvplus: "apple",
+  max: "max",
+  hbomax: "max",
+  paramount: "paramount",
+  paramountplus: "paramount",
+};
 
 export interface Show {
   id: string;
@@ -16,32 +32,21 @@ export interface Show {
 const CACHE_MAX_AGE_MINUTES = 30;
 
 export async function getUpcomingShows(platforms: string[] = []): Promise<Show[]> {
-  // Always normalize platform keys to lowercase
-  const platformsNormalized = platforms.map(p => p.toLowerCase());
+  // Normalize platform keys to canonical
+  const platformsNormalized = platforms.map(
+    p => PLATFORM_KEY_ALIASES[p.toLowerCase()] || p.toLowerCase()
+  );
+  console.log('[showAggregator] Requested platforms:', platforms, 'Normalized:', platformsNormalized);
 
-  const cached = await getCachedShows(platformsNormalized, CACHE_MAX_AGE_MINUTES);
-  console.log('Cached shows:', cached);
+  // === DISABLED CACHE FOR DEBUG ===
 
-  const hasAllPlatforms =
-    platformsNormalized.length === 0 ||
-    platformsNormalized.every(p => cached.some(show => show.platform === p));
-
-  if (cached.length > 0 && hasAllPlatforms) {
-    console.log('Returning cached shows');
-    // Only return shows for requested platforms
-    if (platformsNormalized.length === 0) {
-      return cached;
-    }
-    return cached.filter(show => platformsNormalized.includes(show.platform.toLowerCase()));
-  }
-
-  console.log('Fetching from APIs...');
+  console.log('[showAggregator] Fetching from APIs...');
   const [apiOneShows, apiTwoShows] = await Promise.all([
     fetchFromApiOne(platformsNormalized),
     fetchFromApiTwo(platformsNormalized)
   ]);
-  console.log('apiOneShows:', apiOneShows);
-  console.log('apiTwoShows:', apiTwoShows);
+  console.log('[showAggregator] apiOneShows:', apiOneShows);
+  console.log('[showAggregator] apiTwoShows:', apiTwoShows);
 
   const allShows = [...apiOneShows, ...apiTwoShows];
 
@@ -53,12 +58,12 @@ export async function getUpcomingShows(platforms: string[] = []): Promise<Show[]
       ) === idx
   );
 
-  // Group shows by platform and sort by popularity, take top 10 per platform
+  // Group shows by canonical platform, sort by popularity, take top 10 per platform
   const showsByPlatform: Record<string, Show[]> = {};
   uniqueShows.forEach(show => {
-    const plat = show.platform.toLowerCase();
+    const plat = PLATFORM_KEY_ALIASES[show.platform] || show.platform;
     if (!showsByPlatform[plat]) showsByPlatform[plat] = [];
-    showsByPlatform[plat].push(show);
+    showsByPlatform[plat].push({ ...show, platform: plat });
   });
 
   Object.keys(showsByPlatform).forEach(platform => {
@@ -70,13 +75,17 @@ export async function getUpcomingShows(platforms: string[] = []): Promise<Show[]
     showsByPlatform[platform] = showsByPlatform[platform].slice(0, 10);
   });
 
-  // Only save the top shows for all platforms (cache is always all)
-  const allTopShows = Object.values(showsByPlatform).flat();
-  await saveShows(allTopShows);
+  const requestedPlatformKeys = platformsNormalized.length
+    ? platformsNormalized
+    : Object.keys(showsByPlatform);
 
-  // Only return shows for requested platforms
-  if (platformsNormalized.length === 0) {
-    return allTopShows;
-  }
-  return platformsNormalized.flatMap(p => showsByPlatform[p] ?? []);
+  const topShows = requestedPlatformKeys.flatMap(
+    p => showsByPlatform[p] || []
+  );
+
+  // await saveShows(topShows); // Cache temporarily disabled
+
+  console.log('[showAggregator] Final outgoing topShows:', topShows);
+
+  return topShows;
 }
