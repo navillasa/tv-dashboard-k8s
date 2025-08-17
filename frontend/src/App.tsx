@@ -150,12 +150,20 @@ function App() {
           fontSize: "2.5rem", 
           fontWeight: 700, 
           margin: "0 0 0.5rem 0",
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          backgroundClip: "text"
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "0.5rem"
         }}>
-          📺 Popular TV Shows
+          <span style={{ fontSize: "2.5rem" }}>📺</span>
+          <span style={{
+            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text"
+          }}>
+            TV Hub
+          </span>
         </h1>
         <p style={{ 
           color: "#666", 
