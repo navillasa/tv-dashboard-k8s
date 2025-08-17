@@ -99,7 +99,8 @@ export async function fetchFromApiOne(platforms: string[]): Promise<Show[]> {
           .map((show: any) => ({
             id: show.id?.toString() ?? "",
             title: show.name ?? "",
-            platform: canonicalPlatform,
+            platforms: [canonicalPlatform],  // Changed to array
+            platform: canonicalPlatform,     // Keep for compatibility during transition
             airDate: show.first_air_date ?? "",
             posterUrl: show.poster_path
               ? `https://image.tmdb.org/t/p/w500${show.poster_path}`

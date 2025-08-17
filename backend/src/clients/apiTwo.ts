@@ -36,7 +36,8 @@ export async function fetchFromApiTwo(platforms: string[]): Promise<Show[]> {
       shows.push({
         id: show.id.toString(),
         title: show.name,
-        platform,
+        platforms: [platform],  // Changed to array
+        platform,               // Keep for compatibility during transition
         airDate: showEntry.airdate,
         posterUrl: show.image?.medium || "",
         trailerUrl: "",
@@ -47,6 +48,6 @@ export async function fetchFromApiTwo(platforms: string[]): Promise<Show[]> {
   }
 
   return platforms.flatMap(platform =>
-    shows.filter(s => s.platform === platform).slice(0, 15)
+    shows.filter((s: any) => s.platform === platform).slice(0, 15)
   );
 }

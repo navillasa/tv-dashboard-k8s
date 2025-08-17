@@ -14,13 +14,13 @@ type Show = {
 
 // List ALL possible platforms for columns
 const ALL_PLATFORMS = [
-  { key: "netflix", label: "Netflix" },
-  { key: "disney", label: "Disney+" },
-  { key: "prime", label: "Prime Video" },
-  { key: "hulu", label: "Hulu" },
-  { key: "apple", label: "Apple TV+" },
-  { key: "max", label: "Max" },
-  { key: "paramount", label: "Paramount+" },
+  { key: "netflix", label: "Netflix", logo: "🔴", color: "#E50914" },
+  { key: "disney", label: "Disney+", logo: "✨", color: "#113CCF" },
+  { key: "prime", label: "Prime Video", logo: "📦", color: "#00A8E1" },
+  { key: "hulu", label: "Hulu", logo: "🟢", color: "#1CE783" },
+  { key: "apple", label: "Apple TV+", logo: "🍎", color: "#1D1D1F" },
+  { key: "max", label: "Max", logo: "🔵", color: "#0073E6" },
+  { key: "paramount", label: "Paramount+", logo: "⭐", color: "#0064FF" },
 ];
 
 function App() {
@@ -157,6 +157,24 @@ function App() {
     
     return platformUrls[platform] || '#';
   };
+
+  // Create a lighter, more subtle version of the platform color
+  const getLighterColor = (hexColor: string) => {
+    // Convert hex to RGB
+    const r = parseInt(hexColor.slice(1, 3), 16);
+    const g = parseInt(hexColor.slice(3, 5), 16);
+    const b = parseInt(hexColor.slice(5, 7), 16);
+    
+    // Make it lighter by blending with white (increase values towards 255)
+    const lightenFactor = 0.6; // Adjust this to make it more or less subtle
+    const newR = Math.round(r + (255 - r) * lightenFactor);
+    const newG = Math.round(g + (255 - g) * lightenFactor);
+    const newB = Math.round(b + (255 - b) * lightenFactor);
+    
+    return `rgb(${newR}, ${newG}, ${newB})`;
+  };
+
+
 
   const Modal = ({ show, isOpen, onClose }: { show: any; isOpen: boolean; onClose: () => void }) => {
     if (!isOpen || !show) return null;
@@ -309,30 +327,42 @@ function App() {
                 </div>
               )}
               
-              {/* Watch button */}
-              <a
-                href={getWatchLink(show.platform, show.title)}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: "inline-block",
-                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                  color: "#fff",
-                  padding: "12px 24px",
-                  borderRadius: 25,
-                  textDecoration: "none",
-                  fontWeight: 600,
-                  fontSize: "0.9rem",
-                  boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
-                  transition: "transform 0.2s ease",
-                  marginTop: "15px",
-                  alignSelf: "flex-start"
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-2px)"}
-                onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
-              >
-                🎬 Watch on {ALL_PLATFORMS.find(p => p.key === show.platform)?.label || show.platform}
-              </a>
+              {/* Watch buttons for each platform */}
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "15px" }}>
+                {(show.platforms || [show.platform]).map((platform: string) => {
+                  const platformInfo = ALL_PLATFORMS.find(p => p.key === platform);
+                  if (!platformInfo) return null;
+                  
+                  return (
+                    <a
+                      key={platform}
+                      href={getWatchLink(platform, show.title)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        background: platformInfo.color,
+                        color: "#fff",
+                        padding: "10px 16px",
+                        borderRadius: 20,
+                        textDecoration: "none",
+                        fontWeight: 600,
+                        fontSize: "0.85rem",
+                        boxShadow: "0 3px 10px rgba(0,0,0,0.2)",
+                        transition: "transform 0.2s ease",
+                        border: "none"
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-2px)"}
+                      onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
+                    >
+                      <span>{platformInfo.logo}</span>
+                      <span>Watch on {platformInfo.label}</span>
+                    </a>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
@@ -469,16 +499,16 @@ function App() {
               <h2 style={{ 
                 textAlign: "center", 
                 marginBottom: "1.5rem",
-                fontSize: "1.4rem",
-                fontWeight: 600,
-                color: "#333",
-                padding: "1rem",
-                background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
-                borderRadius: "12px",
-                border: "1px solid #dee2e6",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.05)"
+                fontSize: "1.3rem",
+                fontWeight: 500,
+                color: platform.color,
+                padding: "0.8rem 1rem",
+                background: getLighterColor(platform.color),
+                borderRadius: "8px",
+                border: "none",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.08)"
               }}>
-                {platform.label}
+                {platform.logo} {platform.label}
               </h2>
               {showsByPlatform[platform.key].length === 0 ? (
                 <div style={{ 
@@ -498,24 +528,24 @@ function App() {
                   <div
                     key={show.id + show.platform}
                     style={{
-                      border: "1px solid #e9ecef",
+                      border: "none",
                       borderRadius: 16,
                       padding: platformFilter.length === 1 ? 24 : 14,
-                      background: "#ffffff",
+                      background: `linear-gradient(135deg, ${platform.color}08 0%, ${platform.color}15 100%)`,
                       marginBottom: platformFilter.length === 1 ? 24 : 16,
                       position: "relative",
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                      boxShadow: `0 4px 12px ${platform.color}25`,
                       transition: "transform 0.2s ease, box-shadow 0.2s ease",
                       cursor: "pointer"
                     }}
                     onClick={() => openModal(show)}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = "translateY(-2px)";
-                      e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.12)";
+                      e.currentTarget.style.boxShadow = `0 8px 25px ${platform.color}40`;
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = "translateY(0)";
-                      e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)";
+                      e.currentTarget.style.boxShadow = `0 4px 12px ${platform.color}25`;
                     }}
                   >
                     {show.posterUrl && (
@@ -540,6 +570,7 @@ function App() {
                     }}>
                       {show.title}
                     </div>
+
                     <div style={{ 
                       display: "flex", 
                       justifyContent: "center", 

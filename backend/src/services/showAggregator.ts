@@ -21,7 +21,8 @@ const PLATFORM_KEY_ALIASES: Record<string, string> = {
 export interface Show {
   id: string;
   title: string;
-  platform: string;
+  platforms?: string[];  // New multi-platform support (optional for compatibility)
+  platform: string;      // Keep original field
   airDate: string;
   posterUrl?: string;
   trailerUrl?: string;
@@ -50,16 +51,43 @@ export async function getUpcomingShows(platforms: string[] = []): Promise<Show[]
 
   const allShows = [...apiOneShows, ...apiTwoShows];
 
-  // Deduplicate by title (case-insensitive) + platform
-  const uniqueShows = allShows.filter(
+  // Create a map of all shows by title to get cross-platform availability
+  const showsByTitle: Record<string, string[]> = {};
+  allShows.forEach((show: any) => {
+    const titleKey = show.title.toLowerCase();
+    const platform = PLATFORM_KEY_ALIASES[show.platform] || show.platform;
+    
+    if (!showsByTitle[titleKey]) {
+      showsByTitle[titleKey] = [];
+    }
+    if (!showsByTitle[titleKey].includes(platform)) {
+      showsByTitle[titleKey].push(platform);
+    }
+  });
+
+  // Enhance each show with cross-platform availability data
+  const enhancedShows = allShows.map((show: any) => {
+    const titleKey = show.title.toLowerCase();
+    const platform = PLATFORM_KEY_ALIASES[show.platform] || show.platform;
+    
+    return {
+      ...show,
+      platforms: showsByTitle[titleKey] || [platform], // All platforms this show is available on
+      platform: platform  // The specific platform for this entry's popularity ranking
+    };
+  });
+
+  // Deduplicate by title + platform to avoid duplicates from multiple APIs
+  const uniqueShows = enhancedShows.filter(
     (show, idx, arr) =>
       arr.findIndex(
-        s => s.title.toLowerCase() === show.title.toLowerCase() && s.platform === show.platform
+        s => s.title.toLowerCase() === show.title.toLowerCase() && 
+             (PLATFORM_KEY_ALIASES[s.platform] || s.platform) === (PLATFORM_KEY_ALIASES[show.platform] || show.platform)
       ) === idx
   );
 
   // Group shows by canonical platform, sort by popularity, take top 10 per platform
-  const showsByPlatform: Record<string, Show[]> = {};
+  const showsByPlatform: Record<string, any[]> = {};
   uniqueShows.forEach(show => {
     const plat = PLATFORM_KEY_ALIASES[show.platform] || show.platform;
     if (!showsByPlatform[plat]) showsByPlatform[plat] = [];
