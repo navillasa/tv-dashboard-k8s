@@ -10,10 +10,7 @@ router.get("/", async (req, res) => {
       : Array.isArray(req.query.platform)
         ? (req.query.platform as string[])
         : [];
-    console.log("[/api/shows] Query params:", req.query, "Parsed platforms:", platforms);
-
     const shows = await getUpcomingShows(platforms);
-    console.log("[/api/shows] Responding with shows:", shows);
 
     res.json(shows);
   } catch (error) {

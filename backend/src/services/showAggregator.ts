@@ -36,17 +36,10 @@ export async function getUpcomingShows(platforms: string[] = []): Promise<Show[]
   const platformsNormalized = platforms.map(
     p => PLATFORM_KEY_ALIASES[p.toLowerCase()] || p.toLowerCase()
   );
-  console.log('[showAggregator] Requested platforms:', platforms, 'Normalized:', platformsNormalized);
-
-  // === DISABLED CACHE FOR DEBUG ===
-
-  console.log('[showAggregator] Fetching from APIs...');
   const [apiOneShows, apiTwoShows] = await Promise.all([
     fetchFromApiOne(platformsNormalized),
     fetchFromApiTwo(platformsNormalized)
   ]);
-  console.log('[showAggregator] apiOneShows:', apiOneShows);
-  console.log('[showAggregator] apiTwoShows:', apiTwoShows);
 
   const allShows = [...apiOneShows, ...apiTwoShows];
 
@@ -84,8 +77,6 @@ export async function getUpcomingShows(platforms: string[] = []): Promise<Show[]
   );
 
   // await saveShows(topShows); // Cache temporarily disabled
-
-  console.log('[showAggregator] Final outgoing topShows:', topShows);
 
   return topShows;
 }
