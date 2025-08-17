@@ -68,11 +68,17 @@ function App() {
   };
 
 
-  const [expandedShowIds, setExpandedShowIds] = useState<string[]>([]);
-  const toggleDescription = (id: string) => {
-    setExpandedShowIds(prev =>
-      prev.includes(id) ? prev.filter(_id => _id !== id) : [...prev, id]
-    );
+  const [selectedShow, setSelectedShow] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = (show: any) => {
+    setSelectedShow(show);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedShow(null);
+    setIsModalOpen(false);
   };
 
   const formatAirDate = (airDate: string) => {
@@ -136,7 +142,203 @@ function App() {
     return `Season ${nextSeason.seasonNumber} coming ${month} ${year}`;
   };
 
+  const getWatchLink = (platform: string, showTitle: string) => {
+    const encodedTitle = encodeURIComponent(showTitle);
+    
+    const platformUrls: Record<string, string> = {
+      netflix: `https://www.netflix.com/search?q=${encodedTitle}`,
+      disney: `https://www.disneyplus.com/search/${encodedTitle}`,
+      prime: `https://www.amazon.com/gp/video/search/ref=atv_hm_hom_1_search?phrase=${encodedTitle}`,
+      hulu: `https://www.hulu.com/search?q=${encodedTitle}`,
+      apple: `https://tv.apple.com/search?term=${encodedTitle}`,
+      max: `https://www.max.com/search?q=${encodedTitle}`,
+      paramount: `https://www.paramountplus.com/search/${encodedTitle}`
+    };
+    
+    return platformUrls[platform] || '#';
+  };
 
+  const Modal = ({ show, isOpen, onClose }: { show: any; isOpen: boolean; onClose: () => void }) => {
+    if (!isOpen || !show) return null;
+
+    return (
+      <div 
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(0, 0, 0, 0.7)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1000,
+          padding: "20px"
+        }}
+        onClick={onClose}
+      >
+        <div
+          style={{
+            backgroundColor: "#ffffff",
+            borderRadius: 20,
+            maxWidth: "600px",
+            width: "100%",
+            maxHeight: "90vh",
+            overflow: "auto",
+            position: "relative",
+            boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)"
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            style={{
+              position: "absolute",
+              top: "15px",
+              right: "15px",
+              background: "rgba(0, 0, 0, 0.1)",
+              border: "none",
+              borderRadius: "50%",
+              width: "40px",
+              height: "40px",
+              cursor: "pointer",
+              fontSize: "20px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "background-color 0.2s ease"
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(0, 0, 0, 0.2)"}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "rgba(0, 0, 0, 0.1)"}
+          >
+            ×
+          </button>
+
+          {/* Modal content */}
+          <div style={{ padding: "30px" }}>
+            {/* Poster and title section */}
+            <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
+              {show.posterUrl && (
+                <img
+                  src={show.posterUrl}
+                  alt={show.title}
+                  style={{
+                    width: "150px",
+                    height: "225px",
+                    objectFit: "cover",
+                    borderRadius: 12,
+                    flexShrink: 0
+                  }}
+                />
+              )}
+              <div style={{ flex: 1 }}>
+                <h2 style={{
+                  fontSize: "1.8rem",
+                  fontWeight: 700,
+                  margin: "0 0 15px 0",
+                  color: "#333",
+                  lineHeight: 1.2
+                }}>
+                  {show.title}
+                </h2>
+              </div>
+            </div>
+
+            {/* Description */}
+            {show.description && (
+              <div style={{
+                fontSize: "1rem",
+                lineHeight: 1.6,
+                color: "#555",
+                marginBottom: "25px",
+                padding: "20px",
+                background: "#f8f9fa",
+                borderRadius: 12,
+                border: "1px solid #e9ecef"
+              }}>
+                {show.description}
+              </div>
+            )}
+
+            {/* Show details */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              {show.airDate && (
+                <div style={{
+                  fontSize: "0.9rem",
+                  color: "#6c757d",
+                  fontWeight: 500,
+                  padding: "8px 15px",
+                  background: "#e9ecef",
+                  borderRadius: 8,
+                  display: "inline-block",
+                  alignSelf: "flex-start"
+                }}>
+                  📅 {formatAirDate(show.airDate)}
+                </div>
+              )}
+
+              {formatSeasonInfo(show) && (
+                <div style={{
+                  fontSize: "0.9rem",
+                  color: "#495057",
+                  fontWeight: 500,
+                  padding: "8px 15px",
+                  background: "#d1ecf1",
+                  borderRadius: 8,
+                  display: "inline-block",
+                  alignSelf: "flex-start"
+                }}>
+                  📺 {formatSeasonInfo(show)}
+                </div>
+              )}
+
+              {formatUpcomingSeason(show) && (
+                <div style={{
+                  fontSize: "0.9rem",
+                  color: "#155724",
+                  fontWeight: 500,
+                  padding: "8px 15px",
+                  background: "#d4edda",
+                  borderRadius: 8,
+                  display: "inline-block",
+                  alignSelf: "flex-start"
+                }}>
+                  🚀 {formatUpcomingSeason(show)}
+                </div>
+              )}
+              
+              {/* Watch button */}
+              <a
+                href={getWatchLink(show.platform, show.title)}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "inline-block",
+                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  color: "#fff",
+                  padding: "12px 24px",
+                  borderRadius: 25,
+                  textDecoration: "none",
+                  fontWeight: 600,
+                  fontSize: "0.9rem",
+                  boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
+                  transition: "transform 0.2s ease",
+                  marginTop: "15px",
+                  alignSelf: "flex-start"
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-2px)"}
+                onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
+              >
+                🎬 Watch on {ALL_PLATFORMS.find(p => p.key === show.platform)?.label || show.platform}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div style={{ 
@@ -306,6 +508,7 @@ function App() {
                       transition: "transform 0.2s ease, box-shadow 0.2s ease",
                       cursor: "pointer"
                     }}
+                    onClick={() => openModal(show)}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = "translateY(-2px)";
                       e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.12)";
@@ -358,91 +561,7 @@ function App() {
                         {index < 3 ? "🏆" : "📈"} #{index + 1} Trending
                       </div>
                     </div>
-                    {show.description && (
-                      <>
-                        <button
-                          onClick={() => toggleDescription(show.id)}
-                          style={{
-                            marginTop: 12,
-                            fontSize: "0.85rem",
-                            color: "#667eea",
-                            background: "#f8f9fa",
-                            border: "1px solid #e9ecef",
-                            borderRadius: 8,
-                            padding: "6px 12px",
-                            cursor: "pointer",
-                            transition: "all 0.2s ease",
-                            fontWeight: 500
-                          }}
-                        >
-                          {expandedShowIds.includes(show.id)
-                            ? "Hide Description ▲"
-                            : "Show Description ▼"}
-                        </button>
-                        {expandedShowIds.includes(show.id) && (
-                          <div style={{ 
-                            marginTop: 12, 
-                            fontSize: "0.9rem", 
-                            color: "#555",
-                            lineHeight: 1.5,
-                            padding: "12px",
-                            background: "#f8f9fa",
-                            borderRadius: 8,
-                            border: "1px solid #e9ecef"
-                          }}>
-                            <div style={{ marginBottom: "12px" }}>
-                              {show.airDate && (
-                                <div style={{ 
-                                  fontSize: "0.85rem", 
-                                  color: "#6c757d",
-                                  fontWeight: 500,
-                                  marginBottom: "6px",
-                                  padding: "4px 8px",
-                                  background: "#e9ecef",
-                                  borderRadius: 6,
-                                  display: "inline-block"
-                                }}>
-                                  📅 {formatAirDate(show.airDate)}
-                                </div>
-                              )}
-                              
-                              {formatSeasonInfo(show) && (
-                                <div style={{ 
-                                  fontSize: "0.85rem", 
-                                  color: "#495057",
-                                  fontWeight: 500,
-                                  marginBottom: "6px",
-                                  padding: "4px 8px",
-                                  background: "#d1ecf1",
-                                  borderRadius: 6,
-                                  display: "inline-block",
-                                  marginLeft: "6px"
-                                }}>
-                                  📺 {formatSeasonInfo(show)}
-                                </div>
-                              )}
-                              
-                              {formatUpcomingSeason(show) && (
-                                <div style={{ 
-                                  fontSize: "0.85rem", 
-                                  color: "#155724",
-                                  fontWeight: 500,
-                                  marginTop: "6px",
-                                  padding: "4px 8px",
-                                  background: "#d4edda",
-                                  borderRadius: 6,
-                                  display: "inline-block"
-                                }}>
-                                  🚀 {formatUpcomingSeason(show)}
-                                </div>
-                              )}
-                            </div>
-                            
-                            <div>{show.description}</div>
-                          </div>
-                        )}
-                      </>
-                    )}
+
                   </div>
                 ))
               )}
@@ -450,6 +569,13 @@ function App() {
           ))}
         </div>
       )}
+      
+      {/* Modal */}
+      <Modal 
+        show={selectedShow} 
+        isOpen={isModalOpen} 
+        onClose={closeModal} 
+      />
     </div>
   );
 }
