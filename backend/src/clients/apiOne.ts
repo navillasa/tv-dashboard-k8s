@@ -34,6 +34,34 @@ const PLATFORM_KEY_ALIASES: Record<string, string> = {
   paramountplus: "paramount",
 };
 
+// Helper function to fetch detailed show information
+async function fetchShowDetails(showId: string) {
+  try {
+    const url = `https://api.themoviedb.org/3/tv/${showId}?api_key=${TMDB_API_KEY}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    
+    return {
+      numberOfSeasons: data.number_of_seasons || 0,
+      numberOfEpisodes: data.number_of_episodes || 0,
+      seasons: (data.seasons || [])
+        .filter((season: any) => season.season_number > 0) // Filter out specials
+        .map((season: any) => ({
+          seasonNumber: season.season_number,
+          episodeCount: season.episode_count,
+          airDate: season.air_date || ""
+        }))
+    };
+  } catch (err) {
+    console.error(`[apiOne] Error fetching details for show ${showId}:`, err);
+    return {
+      numberOfSeasons: 0,
+      numberOfEpisodes: 0,
+      seasons: []
+    };
+  }
+}
+
 export async function fetchFromApiOne(platforms: string[]): Promise<Show[]> {
   if (!TMDB_API_KEY) {
     throw new Error("TMDB_API_KEY is missing from environment variables.");
@@ -66,9 +94,7 @@ export async function fetchFromApiOne(platforms: string[]): Promise<Show[]> {
           console.log(`[apiOne] ${platform} fetched ${data.results.length} shows, first:`, data.results[0]);
         }
 
-        return (data.results || [])
-          // Comment out this line to see if poster_path is filtering everything
-          // .filter((show: any) => !!show.poster_path)
+        const basicShows = (data.results || [])
           .slice(0, 15)
           .map((show: any) => ({
             id: show.id?.toString() ?? "",
@@ -82,6 +108,20 @@ export async function fetchFromApiOne(platforms: string[]): Promise<Show[]> {
             description: show.overview ?? "",
             popularity: show.popularity ?? 0,
           }));
+
+        // Fetch detailed info for top 10 shows only to avoid too many API calls
+        const detailedShows = await Promise.all(
+          basicShows.slice(0, 10).map(async (show: Show) => {
+            const details = await fetchShowDetails(show.id);
+            return {
+              ...show,
+              ...details
+            };
+          })
+        );
+
+        // Return top 10 with details plus remaining 5 without details
+        return [...detailedShows, ...basicShows.slice(10)];
       } catch (err) {
         console.error(`[apiOne] ERROR fetching for ${platform}:`, err);
         return [];

@@ -75,6 +75,67 @@ function App() {
     );
   };
 
+  const formatAirDate = (airDate: string) => {
+    if (!airDate) return "Unknown";
+    
+    const date = new Date(airDate);
+    const startYear = date.getFullYear();
+    const currentYear = new Date().getFullYear();
+    
+    // If the show started this year, show month and year
+    if (startYear === currentYear) {
+      const month = date.toLocaleDateString('en-US', { month: 'long' });
+      return `${month} ${startYear} - Present`;
+    }
+    
+    // If it's from last year, it might still be airing
+    if (startYear === currentYear - 1) {
+      return `${startYear} - Present`;
+    }
+    
+    // For older shows, just show when it first aired since we don't know the end date
+    return `First aired: ${startYear}`;
+  };
+
+  const formatSeasonInfo = (show: any) => {
+    if (!show.numberOfSeasons) return null;
+    
+    const parts = [];
+    
+    // Basic season/episode info
+    if (show.numberOfSeasons === 1) {
+      parts.push(`1 season`);
+    } else {
+      parts.push(`${show.numberOfSeasons} seasons`);
+    }
+    
+    if (show.numberOfEpisodes) {
+      parts.push(`${show.numberOfEpisodes} episodes total`);
+    }
+    
+    return parts.join(' • ');
+  };
+
+  const formatUpcomingSeason = (show: any) => {
+    if (!show.seasons) return null;
+    
+    const currentYear = new Date().getFullYear();
+    const upcomingSeasons = show.seasons.filter((season: any) => {
+      const seasonYear = new Date(season.airDate).getFullYear();
+      return seasonYear > currentYear || 
+             (seasonYear === currentYear && new Date(season.airDate) > new Date());
+    });
+    
+    if (upcomingSeasons.length === 0) return null;
+    
+    const nextSeason = upcomingSeasons[0];
+    const airDate = new Date(nextSeason.airDate);
+    const month = airDate.toLocaleDateString('en-US', { month: 'long' });
+    const year = airDate.getFullYear();
+    
+    return `Season ${nextSeason.seasonNumber} coming ${month} ${year}`;
+  };
+
 
 
   return (
@@ -115,6 +176,28 @@ function App() {
         justifyContent: "center",
         flexWrap: "wrap"
       }}>
+        <button
+          onClick={() => setPlatformFilter([])}
+          style={{
+            padding: "0.75rem 1.25rem",
+            borderRadius: 25,
+            border: "none",
+            background: platformFilter.length === 0
+              ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+              : "#f8f9fa",
+            color: platformFilter.length === 0 ? "#fff" : "#333",
+            cursor: "pointer",
+            fontSize: "0.9rem",
+            fontWeight: 500,
+            transition: "all 0.2s ease",
+            boxShadow: platformFilter.length === 0 
+              ? "0 4px 12px rgba(102, 126, 234, 0.3)"
+              : "0 2px 8px rgba(0,0,0,0.1)",
+            transform: platformFilter.length === 0 ? "translateY(-1px)" : "translateY(0)"
+          }}
+        >
+          All Platforms
+        </button>
         {ALL_PLATFORMS.map((p) => (
           <button
             key={p.key}
@@ -155,12 +238,23 @@ function App() {
         <div
           style={{
             display: "grid",
-            gap: 32,
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            maxWidth: "100%"
+            gap: platformFilter.length === 1 ? 32 : 12,
+            gridTemplateColumns: platformFilter.length === 1 
+              ? "1fr"
+              : platformFilter.length > 1 
+                ? `repeat(${platformFilter.length}, minmax(200px, 1fr))`
+                : "repeat(7, minmax(150px, 1fr))",
+            maxWidth: platformFilter.length === 1 ? "600px" : "100%",
+            margin: platformFilter.length === 1 ? "0 auto" : "0",
+            minHeight: "400px"
           }}
         >
-          {ALL_PLATFORMS.map((platform) => (
+          {ALL_PLATFORMS
+            .filter(platform => 
+              platformFilter.length === 0 || 
+              platformFilter.includes(platform.key)
+            )
+            .map((platform) => (
             <div key={platform.key} style={{ minHeight: "300px" }}>
               <h2 style={{ 
                 textAlign: "center", 
@@ -190,15 +284,15 @@ function App() {
               ) : (
                 showsByPlatform[platform.key]
                   .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
-                  .map((show) => (
+                  .map((show, index) => (
                   <div
                     key={show.id + show.platform}
                     style={{
                       border: "1px solid #e9ecef",
                       borderRadius: 16,
-                      padding: 20,
+                      padding: platformFilter.length === 1 ? 24 : 14,
                       background: "#ffffff",
-                      marginBottom: 20,
+                      marginBottom: platformFilter.length === 1 ? 24 : 16,
                       position: "relative",
                       boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
                       transition: "transform 0.2s ease, box-shadow 0.2s ease",
@@ -219,16 +313,16 @@ function App() {
                         alt={show.title}
                         style={{ 
                           width: "100%", 
-                          height: "200px",
+                          height: platformFilter.length === 1 ? "250px" : "160px",
                           objectFit: "cover",
                           borderRadius: 12, 
-                          marginBottom: 16
+                          marginBottom: 12
                         }}
                       />
                     )}
                     <div style={{ 
                       fontWeight: 600, 
-                      fontSize: "1.1rem",
+                      fontSize: platformFilter.length === 1 ? "1.2rem" : "0.95rem",
                       marginBottom: 8,
                       color: "#333",
                       lineHeight: 1.3
@@ -237,31 +331,24 @@ function App() {
                     </div>
                     <div style={{ 
                       display: "flex", 
-                      justifyContent: "space-between", 
+                      justifyContent: "center", 
                       alignItems: "center",
-                      marginBottom: 8
+                      marginBottom: 12
                     }}>
-                      {typeof show.popularity === "number" && (
-                        <div style={{ 
-                          fontSize: "0.85rem", 
-                          color: "#667eea",
-                          fontWeight: 500,
-                          background: "#f0f2ff",
-                          padding: "4px 8px",
-                          borderRadius: 12
-                        }}>
-                          ⭐ {show.popularity.toFixed(1)}
-                        </div>
-                      )}
-                      {show.airDate && (
-                        <div style={{ 
-                          fontSize: "0.85rem", 
-                          color: "#6c757d",
-                          fontWeight: 500
-                        }}>
-                          {new Date(show.airDate).getFullYear()}
-                        </div>
-                      )}
+                      <div style={{ 
+                        fontSize: "0.85rem", 
+                        color: "#667eea",
+                        fontWeight: 600,
+                        background: index < 3 
+                          ? "linear-gradient(135deg, #ffd700 0%, #ffed4e 100%)"  // Gold for top 3
+                          : "#f0f2ff",
+                        color: index < 3 ? "#d69e2e" : "#667eea",
+                        padding: "6px 12px",
+                        borderRadius: 12,
+                        border: index < 3 ? "1px solid #ffd700" : "none"
+                      }}>
+                        {index < 3 ? "🏆" : "📈"} #{index + 1} Trending
+                      </div>
                     </div>
                     {show.description && (
                       <>
@@ -295,7 +382,55 @@ function App() {
                             borderRadius: 8,
                             border: "1px solid #e9ecef"
                           }}>
-                            {show.description}
+                            <div style={{ marginBottom: "12px" }}>
+                              {show.airDate && (
+                                <div style={{ 
+                                  fontSize: "0.85rem", 
+                                  color: "#6c757d",
+                                  fontWeight: 500,
+                                  marginBottom: "6px",
+                                  padding: "4px 8px",
+                                  background: "#e9ecef",
+                                  borderRadius: 6,
+                                  display: "inline-block"
+                                }}>
+                                  📅 {formatAirDate(show.airDate)}
+                                </div>
+                              )}
+                              
+                              {formatSeasonInfo(show) && (
+                                <div style={{ 
+                                  fontSize: "0.85rem", 
+                                  color: "#495057",
+                                  fontWeight: 500,
+                                  marginBottom: "6px",
+                                  padding: "4px 8px",
+                                  background: "#d1ecf1",
+                                  borderRadius: 6,
+                                  display: "inline-block",
+                                  marginLeft: "6px"
+                                }}>
+                                  📺 {formatSeasonInfo(show)}
+                                </div>
+                              )}
+                              
+                              {formatUpcomingSeason(show) && (
+                                <div style={{ 
+                                  fontSize: "0.85rem", 
+                                  color: "#155724",
+                                  fontWeight: 500,
+                                  marginTop: "6px",
+                                  padding: "4px 8px",
+                                  background: "#d4edda",
+                                  borderRadius: 6,
+                                  display: "inline-block"
+                                }}>
+                                  🚀 {formatUpcomingSeason(show)}
+                                </div>
+                              )}
+                            </div>
+                            
+                            <div>{show.description}</div>
                           </div>
                         )}
                       </>

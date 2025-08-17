@@ -27,6 +27,13 @@ export interface Show {
   trailerUrl?: string;
   description?: string;
   popularity?: number;
+  numberOfSeasons?: number;
+  numberOfEpisodes?: number;
+  seasons?: Array<{
+    seasonNumber: number;
+    episodeCount: number;
+    airDate: string;
+  }>;
 }
 
 const CACHE_MAX_AGE_MINUTES = 30;
