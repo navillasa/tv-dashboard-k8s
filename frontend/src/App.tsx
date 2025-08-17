@@ -69,10 +69,12 @@ function App() {
 
 
   const [selectedShow, setSelectedShow] = useState<any>(null);
+  const [selectedShowIndex, setSelectedShowIndex] = useState<number | undefined>(undefined);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const openModal = (show: any) => {
+  const openModal = (show: any, index?: number) => {
     setSelectedShow(show);
+    setSelectedShowIndex(index);
     setIsModalOpen(true);
   };
 
@@ -166,7 +168,23 @@ function App() {
     const b = parseInt(hexColor.slice(5, 7), 16);
     
     // Make it lighter by blending with white (increase values towards 255)
-    const lightenFactor = 0.6; // Adjust this to make it more or less subtle
+    const lightenFactor = 0.8; // Made even lighter for tiles
+    const newR = Math.round(r + (255 - r) * lightenFactor);
+    const newG = Math.round(g + (255 - g) * lightenFactor);
+    const newB = Math.round(b + (255 - b) * lightenFactor);
+    
+    return `rgb(${newR}, ${newG}, ${newB})`;
+  };
+
+  // Create a medium-light version for headers
+  const getMediumLightColor = (hexColor: string) => {
+    // Convert hex to RGB
+    const r = parseInt(hexColor.slice(1, 3), 16);
+    const g = parseInt(hexColor.slice(3, 5), 16);
+    const b = parseInt(hexColor.slice(5, 7), 16);
+    
+    // Make it lighter by blending with white
+    const lightenFactor = 0.6; // Medium lightness for headers
     const newR = Math.round(r + (255 - r) * lightenFactor);
     const newG = Math.round(g + (255 - g) * lightenFactor);
     const newB = Math.round(b + (255 - b) * lightenFactor);
@@ -176,7 +194,7 @@ function App() {
 
 
 
-  const Modal = ({ show, isOpen, onClose }: { show: any; isOpen: boolean; onClose: () => void }) => {
+  const Modal = ({ show, isOpen, onClose, showIndex }: { show: any; isOpen: boolean; onClose: () => void; showIndex?: number }) => {
     if (!isOpen || !show) return null;
 
     return (
@@ -255,12 +273,31 @@ function App() {
                 <h2 style={{
                   fontSize: "1.8rem",
                   fontWeight: 700,
-                  margin: "0 0 15px 0",
+                  margin: "0 0 10px 0",
                   color: "#333",
                   lineHeight: 1.2
                 }}>
                   {show.title}
                 </h2>
+                
+                {/* Trending badge */}
+                {showIndex !== undefined && (
+                  <div style={{
+                    display: "inline-block",
+                    fontSize: "0.9rem",
+                    color: showIndex < 3 ? "#d69e2e" : "#667eea",
+                    fontWeight: 600,
+                    background: showIndex < 3 
+                      ? "linear-gradient(135deg, #ffd700 0%, #ffed4e 100%)"
+                      : "#f0f2ff",
+                    padding: "6px 12px",
+                    borderRadius: 12,
+                    border: showIndex < 3 ? "1px solid #ffd700" : "none",
+                    marginBottom: "15px"
+                  }}>
+                    {showIndex < 3 ? "🏆" : "📈"} #{showIndex + 1} Trending
+                  </div>
+                )}
               </div>
             </div>
 
@@ -499,16 +536,16 @@ function App() {
               <h2 style={{ 
                 textAlign: "center", 
                 marginBottom: "1.5rem",
-                fontSize: "1.3rem",
-                fontWeight: 500,
-                color: platform.color,
-                padding: "0.8rem 1rem",
-                background: getLighterColor(platform.color),
-                borderRadius: "8px",
-                border: "none",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.08)"
+                fontSize: "1.4rem",
+                fontWeight: 600,
+                color: "#333",
+                padding: "1rem",
+                background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
+                borderRadius: "12px",
+                border: "1px solid #dee2e6",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.05)"
               }}>
-                {platform.logo} {platform.label}
+                {platform.label}
               </h2>
               {showsByPlatform[platform.key].length === 0 ? (
                 <div style={{ 
@@ -531,21 +568,21 @@ function App() {
                       border: "none",
                       borderRadius: 16,
                       padding: platformFilter.length === 1 ? 24 : 14,
-                      background: `linear-gradient(135deg, ${platform.color}08 0%, ${platform.color}15 100%)`,
+                      background: getLighterColor(platform.color),
                       marginBottom: platformFilter.length === 1 ? 24 : 16,
                       position: "relative",
-                      boxShadow: `0 4px 12px ${platform.color}25`,
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
                       transition: "transform 0.2s ease, box-shadow 0.2s ease",
                       cursor: "pointer"
                     }}
-                    onClick={() => openModal(show)}
+                    onClick={() => openModal(show, index)}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = "translateY(-2px)";
-                      e.currentTarget.style.boxShadow = `0 8px 25px ${platform.color}40`;
+                      e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.12)";
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = "translateY(0)";
-                      e.currentTarget.style.boxShadow = `0 4px 12px ${platform.color}25`;
+                      e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)";
                     }}
                   >
                     {show.posterUrl && (
@@ -570,7 +607,7 @@ function App() {
                     }}>
                       {show.title}
                     </div>
-
+                    
                     <div style={{ 
                       display: "flex", 
                       justifyContent: "center", 
@@ -605,7 +642,8 @@ function App() {
       <Modal 
         show={selectedShow} 
         isOpen={isModalOpen} 
-        onClose={closeModal} 
+        onClose={closeModal}
+        showIndex={selectedShowIndex}
       />
     </div>
   );
