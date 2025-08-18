@@ -1,52 +1,132 @@
 {
   "dashboard": {
     "id": null,
-    "title": "TV Dashboard Application",
-    "tags": ["tv-dashboard", "kubernetes"],
+    "title": "TV Dashboard - Business Metrics",
+    "tags": ["tv-dashboard", "business-metrics", "kubernetes"],
     "timezone": "browser",
     "refresh": "30s",
     "time": {
-      "from": "now-1h",
+      "from": "now-6h",
       "to": "now"
     },
     "panels": [
       {
         "id": 1,
-        "title": "Backend Health Status",
+        "title": "🎬 Total TV Shows Requested",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(increase(tv_shows_requested_total[1h]))",
+            "legendFormat": "Last Hour"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "displayMode": "basic"
+            },
+            "unit": "short"
+          }
+        },
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"],
+            "fields": ""
+          },
+          "textMode": "auto"
+        },
+        "gridPos": {"h": 6, "w": 6, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "📊 Shows in Database",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "tv_shows_in_database_total",
+            "legendFormat": "Total Shows"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "displayMode": "basic"
+            },
+            "unit": "short"
+          }
+        },
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"],
+            "fields": ""
+          },
+          "textMode": "auto"
+        },
+        "gridPos": {"h": 6, "w": 6, "x": 6, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "🌐 API Requests (1h)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(increase(http_requests_total[1h]))",
+            "legendFormat": "Total Requests"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "displayMode": "basic"
+            },
+            "unit": "short"
+          }
+        },
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"],
+            "fields": ""
+          },
+          "textMode": "auto"
+        },
+        "gridPos": {"h": 6, "w": 6, "x": 12, "y": 0}
+      },
+      {
+        "id": 4,
+        "title": "🔗 Service Health",
         "type": "stat",
         "targets": [
           {
             "expr": "up{job=\"tv-dashboard-backend\"}",
-            "legendFormat": "Backend Status"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "thresholds"
-            },
-            "thresholds": {
-              "steps": [
-                {"color": "red", "value": 0},
-                {"color": "green", "value": 1}
-              ]
-            },
-            "mappings": [
-              {"options": {"0": {"text": "DOWN"}}, "type": "value"},
-              {"options": {"1": {"text": "UP"}}, "type": "value"}
-            ]
-          }
-        },
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
-      },
-      {
-        "id": 2,
-        "title": "Frontend Health Status",
-        "type": "stat",
-        "targets": [
+            "legendFormat": "Backend"
+          },
           {
             "expr": "up{job=\"tv-dashboard-frontend\"}",
-            "legendFormat": "Frontend Status"
+            "legendFormat": "Frontend"
           }
         ],
         "fieldConfig": {
@@ -63,56 +143,357 @@
             "mappings": [
               {"options": {"0": {"text": "DOWN"}}, "type": "value"},
               {"options": {"1": {"text": "UP"}}, "type": "value"}
-            ]
+            ],
+            "unit": "short"
           }
         },
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
-      },
-      {
-        "id": 3,
-        "title": "Pod Status",
-        "type": "table",
-        "targets": [
-          {
-            "expr": "kube_pod_info{namespace=\"tv-dashboard-dev\"}",
-            "legendFormat": "{{pod}} - {{phase}}"
-          }
-        ],
-        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
-      },
-      {
-        "id": 4,
-        "title": "Memory Usage",
-        "type": "timeseries",
-        "targets": [
-          {
-            "expr": "container_memory_usage_bytes{namespace=\"tv-dashboard-dev\",container!=\"POD\",container!=\"\"}",
-            "legendFormat": "{{pod}} - {{container}}"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "unit": "bytes"
-          }
+        "options": {
+          "colorMode": "background",
+          "graphMode": "none",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"],
+            "fields": ""
+          },
+          "textMode": "auto"
         },
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+        "gridPos": {"h": 6, "w": 6, "x": 18, "y": 0}
       },
       {
         "id": 5,
-        "title": "CPU Usage",
-        "type": "timeseries",
+        "title": "📺 TV Shows Requested by Platform",
+        "type": "piechart",
         "targets": [
           {
-            "expr": "rate(container_cpu_usage_seconds_total{namespace=\"tv-dashboard-dev\",container!=\"POD\",container!=\"\"}[5m])",
-            "legendFormat": "{{pod}} - {{container}}"
+            "expr": "sum by (platform) (increase(tv_shows_requested_total[6h]))",
+            "legendFormat": "{{platform}}"
           }
         ],
         "fieldConfig": {
           "defaults": {
-            "unit": "percentunit"
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "vis": false
+              }
+            },
+            "unit": "short"
           }
         },
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"],
+            "fields": ""
+          },
+          "pieType": "pie",
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          },
+          "legend": {
+            "displayMode": "visible",
+            "placement": "right"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 6}
+      },
+      {
+        "id": 6,
+        "title": "⚡ API Response Times",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, path))",
+            "legendFormat": "50th percentile - {{path}}"
+          },
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, path))",
+            "legendFormat": "95th percentile - {{path}}"
+          },
+          {
+            "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, path))",
+            "legendFormat": "99th percentile - {{path}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "vis": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "unit": "s"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 6}
+      },
+      {
+        "id": 7,
+        "title": "📈 TV Shows Requests Over Time",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum(rate(tv_shows_requested_total[5m])) by (platform)",
+            "legendFormat": "{{platform}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisLabel": "Requests/sec",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 20,
+              "gradientMode": "opacity",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "vis": false
+              },
+              "lineInterpolation": "smooth",
+              "lineWidth": 2,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "normal"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "unit": "reqps"
+          }
+        },
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 14}
+      },
+      {
+        "id": 8,
+        "title": "🔥 HTTP Requests by Status Code",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total[5m])) by (status_code)",
+            "legendFormat": "{{status_code}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisLabel": "Requests/sec",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "vis": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "unit": "reqps"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 22}
+      },
+      {
+        "id": 9,
+        "title": "🔄 External API Performance",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum(rate(external_api_requests_total[5m])) by (api_name, status)",
+            "legendFormat": "{{api_name}} - {{status}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisLabel": "Requests/sec",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "vis": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "unit": "reqps"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 22}
+      },
+      {
+        "id": 10,
+        "title": "💾 Database Connections",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "database_connections_active",
+            "legendFormat": "Active Connections"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 5},
+                {"color": "red", "value": 10}
+              ]
+            },
+            "unit": "short",
+            "min": 0,
+            "max": 20
+          }
+        },
+        "options": {
+          "orientation": "auto",
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"],
+            "fields": ""
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 30}
+      },
+      {
+        "id": 11,
+        "title": "🔍 Top API Endpoints",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "topk(10, sum by (path) (increase(http_requests_total[1h])))",
+            "legendFormat": "{{path}}",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "displayMode": "auto"
+            },
+            "unit": "short"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "path"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "API Endpoint"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Value"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "Requests (1h)"
+                }
+              ]
+            }
+          ]
+        },
+        "options": {
+          "showHeader": true
+        },
+        "gridPos": {"h": 8, "w": 16, "x": 8, "y": 30}
       }
     ]
   }

@@ -1,7 +1,33 @@
 import { Pool } from "pg";
 import { Show } from "../services/showAggregator";
+import { databaseConnections, showsInDatabase } from "../metrics";
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+
+// Track database connection metrics
+pool.on('connect', () => {
+  databaseConnections.inc();
+});
+
+pool.on('remove', () => {
+  databaseConnections.dec();
+});
+
+// Update shows count periodically
+async function updateShowsCount() {
+  try {
+    const result = await pool.query('SELECT COUNT(*) as count FROM shows');
+    const count = parseInt(result.rows[0].count);
+    showsInDatabase.set(count);
+  } catch (error) {
+    console.error('Error updating shows count metric:', error);
+  }
+}
+
+// Update shows count every 30 seconds
+setInterval(updateShowsCount, 30000);
+// Initial count update
+updateShowsCount();
 
 export async function getCachedShows(platforms: string[], maxAgeMinutes: number): Promise<Show[]> {
   const since = new Date(Date.now() - maxAgeMinutes * 60 * 1000);
@@ -64,4 +90,7 @@ export async function saveShows(shows: Show[]): Promise<void> {
        fetched_at = EXCLUDED.fetched_at`
     , values
   );
+  
+  // Update shows count after saving
+  updateShowsCount();
 }

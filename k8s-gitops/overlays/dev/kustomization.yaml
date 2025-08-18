@@ -22,7 +22,7 @@ patches:
 images:
   - name: tv-dashboard-backend
     newName: gcr.io/tv-dashboard-k8s/tv-dashboard-backend
-    newTag: v1.3
+    newTag: v1.4
   - name: tv-dashboard-frontend
     newName: gcr.io/tv-dashboard-k8s/tv-dashboard-frontend
     newTag: v1.2

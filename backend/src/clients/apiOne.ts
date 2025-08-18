@@ -1,4 +1,5 @@
 import { Show } from "../services/showAggregator";
+import { externalApiRequests, externalApiDuration } from "../metrics";
 
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
 
@@ -36,6 +37,7 @@ const PLATFORM_KEY_ALIASES: Record<string, string> = {
 
 // Helper function to fetch detailed show information
 async function fetchShowDetails(showId: string) {
+  const start = Date.now();
   try {
     // Fetch show details and cast in parallel
     const [showRes, castRes] = await Promise.all([
@@ -43,10 +45,17 @@ async function fetchShowDetails(showId: string) {
       fetch(`https://api.themoviedb.org/3/tv/${showId}/credits?api_key=${TMDB_API_KEY}`)
     ]);
     
+    // Record API metrics
+    externalApiRequests.labels('tmdb', showRes.ok ? 'success' : 'error').inc();
+    externalApiRequests.labels('tmdb', castRes.ok ? 'success' : 'error').inc();
+    
     const [showData, castData] = await Promise.all([
       showRes.json(),
       castRes.json()
     ]);
+    
+    const duration = (Date.now() - start) / 1000;
+    externalApiDuration.labels('tmdb').observe(duration);
     
     // Extract starring cast (top 5 main cast members)
     const starring = (castData.cast || [])
@@ -98,8 +107,12 @@ export async function fetchFromApiOne(platforms: string[]): Promise<Show[]> {
       console.log(`[apiOne] Fetching for ${platform} (${canonicalPlatform}) with URL: ${url}`);
 
       try {
+        const start = Date.now();
         const res = await fetch(url);
+        externalApiRequests.labels('tmdb', res.ok ? 'success' : 'error').inc();
         const data = await res.json();
+        const duration = (Date.now() - start) / 1000;
+        externalApiDuration.labels('tmdb').observe(duration);
 
         // Debug all responses, including errors
         if (!data || !Array.isArray(data.results)) {

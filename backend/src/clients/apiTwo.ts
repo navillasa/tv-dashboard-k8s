@@ -1,4 +1,5 @@
 import { Show } from "../services/showAggregator";
+import { externalApiRequests, externalApiDuration } from "../metrics";
 
 // Map platform keys to TVmaze provider names
 const PLATFORM_NETWORKS: Record<string, string> = {
@@ -14,6 +15,7 @@ const PLATFORM_NETWORKS: Record<string, string> = {
 
 // Helper function to fetch detailed show information from TVmaze
 async function fetchShowDetailsFromTVmaze(showId: string) {
+  const start = Date.now();
   try {
     // Fetch show details, cast, and seasons in parallel
     const [showRes, castRes, seasonsRes] = await Promise.all([
@@ -22,11 +24,19 @@ async function fetchShowDetailsFromTVmaze(showId: string) {
       fetch(`https://api.tvmaze.com/shows/${showId}/seasons`)
     ]);
     
+    // Record API metrics
+    externalApiRequests.labels('tvmaze', showRes.ok ? 'success' : 'error').inc();
+    externalApiRequests.labels('tvmaze', castRes.ok ? 'success' : 'error').inc();
+    externalApiRequests.labels('tvmaze', seasonsRes.ok ? 'success' : 'error').inc();
+    
     const [showData, castData, seasonsData] = await Promise.all([
       showRes.json(),
       castRes.json(),
       seasonsRes.json()
     ]);
+    
+    const duration = (Date.now() - start) / 1000;
+    externalApiDuration.labels('tvmaze').observe(duration);
     
     // Extract starring cast (top 5 main cast members)
     const starring = (castData || [])
@@ -69,8 +79,12 @@ export async function fetchFromApiTwo(platforms: string[]): Promise<Show[]> {
   if (!validPlatforms.length) return [];
 
   // Get all shows airing soon
+  const start = Date.now();
   const res = await fetch("https://api.tvmaze.com/schedule?country=US");
+  externalApiRequests.labels('tvmaze', res.ok ? 'success' : 'error').inc();
   const data = await res.json();
+  const duration = (Date.now() - start) / 1000;
+  externalApiDuration.labels('tvmaze').observe(duration);
 
   const basicShows: any[] = [];
   for (const showEntry of data) {
