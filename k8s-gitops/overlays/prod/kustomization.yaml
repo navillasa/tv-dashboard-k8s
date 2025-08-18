@@ -8,6 +8,7 @@ resources:
   - external-secrets-service-account.yaml
   - external-secret-database.yaml
   - external-secret-api.yaml
+  - frontend-nginx-configmap.yaml
   # Note: Secrets managed by External Secrets Operator + Vault
 
 namePrefix: prod-
@@ -20,6 +21,7 @@ labels:
 patches:
 - path: postgres-prod-patch.yaml
 - path: backend-prod-patch.yaml
+- path: frontend-prod-patch.yaml
 - path: ingress-prod-patch.yaml
 - path: managed-certificate-prod-patch.yaml
 

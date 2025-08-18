@@ -4,7 +4,7 @@ metadata:
   name: tv-dashboard-ingress
   annotations:
     kubernetes.io/ingress.class: "gce"
-    kubernetes.io/ingress.global-static-ip-name: "tv-dashboard-ip"
+    kubernetes.io/ingress.global-static-ip-name: "dev-tv-dashboard-ip"
     networking.gke.io/managed-certificates: "tv-dashboard-ssl"
 spec:
   rules:
