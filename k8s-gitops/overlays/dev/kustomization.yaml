@@ -17,6 +17,7 @@ labels:
 patches:
   - path: postgres-dev-patch.yaml
   - path: backend-dev-patch.yaml
+  - path: ingress-cert-patch.yaml
 
 images:
   - name: tv-dashboard-backend

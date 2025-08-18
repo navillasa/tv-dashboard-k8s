@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: ssl-certificates
-  labels:
-    name: ssl-certificates
-    purpose: infrastructure
