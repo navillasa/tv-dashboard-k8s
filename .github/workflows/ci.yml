@@ -9,6 +9,11 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    env:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: tvshows
+      TMDB_API_KEY: test_key_not_needed_for_lint
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,6 +26,11 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    env:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: tvshows
+      TMDB_API_KEY: test_mock_key
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -37,6 +47,11 @@ jobs:
 
   test-frontend:
     runs-on: ubuntu-latest
+    env:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: tvshows
+      TMDB_API_KEY: test_key_not_needed_for_frontend
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
