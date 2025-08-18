@@ -5,7 +5,7 @@ namespace: tv-dashboard-dev
 
 resources:
   - ../../base
-  # Note: Secrets are created manually or via External Secrets Operator
+  # Note: Secrets are created manually or via External Secrets Operator  
   # See README.md for setup instructions
 
 namePrefix: dev-
