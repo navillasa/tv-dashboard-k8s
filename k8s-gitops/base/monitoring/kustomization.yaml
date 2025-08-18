@@ -10,6 +10,9 @@ resources:
 - grafana-dashboards.yaml
 - grafana.yaml
 - monitoring-ingress.yaml
+- monitoring-certificate.yaml
+# Note: basic-auth secret must be created manually
+# See basic-auth-secret-template.yaml for instructions
 
 commonLabels:
   app.kubernetes.io/part-of: tv-dashboard

@@ -6,3 +6,4 @@ kubeconfig.yaml
 terraform.tfstate
 terraform.tfstate.backup
 .env
+DEMO_GUIDE.md

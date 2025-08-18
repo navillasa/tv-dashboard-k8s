@@ -1,0 +1,8 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: monitoring-ssl
+  namespace: monitoring
+spec:
+  domains:
+  - monitoring.navillasa.dev
