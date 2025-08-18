@@ -11,13 +11,41 @@ A comprehensive TV show aggregation platform built to demonstrate enterprise-lev
 ---
 
 ## 🌟 **Key Features**
-- ✅ Multi-environment GitOps workflows (dev → staging → prod)
-- ️✅ Infrastructure as Code with Terraform on GCP
-- ✅ Comprehensive CI/CD with GitHub Actions, testing, and security scanning
-- ️✅ Container orchestration with Kubernetes
-- ✅ Observability stack with Prometheus, Grafana, and custom metrics
-- ✅ Security-first approach with HashiCorp Vault integration
-- ✅ Cost optimization strategies for cloud resources
+
+### 🎯 **Production-Ready Deployment**
+- ✅ **Live Application**: [tv-hub.navillasa.dev](http://tv-hub.navillasa.dev)
+- ✅ **GKE Autopilot**: Cost-effective Kubernetes with auto-scaling
+- ✅ **Custom Domain + SSL**: Automatic certificate management
+- ✅ **GitOps with ArgoCD**: Continuous deployment from Git
+
+### 🔧 **DevOps Infrastructure** 
+- ✅ **Infrastructure as Code**: Terraform for GCP resources
+- ✅ **Multi-Environment Setup**: Dev/staging/prod with Kustomize overlays  
+- ✅ **CI/CD Pipeline**: GitHub Actions with testing and security
+- ✅ **Container Registry**: Google Container Registry integration
+- ✅ **Security-First**: External secrets management (no hardcoded values)
+
+### 🚀 **Coming Next**
+- 🔄 **Monitoring Stack**: Prometheus + Grafana observability
+- 🔄 **HashiCorp Vault**: External secrets management  
+- 🔄 **Redis Caching**: Performance optimization
+- 🔄 **Cost Dashboard**: Resource monitoring and optimization
+
+---
+
+## 🌐 **Live Application Access**
+
+### 📱 **TV Hub Dashboard** 
+- **URL**: [http://tv-hub.navillasa.dev](http://tv-hub.navillasa.dev)
+- **Features**: Multi-platform TV show aggregation with trending rankings
+- **Data Sources**: TMDB + TVmaze APIs with real-time updates
+- **UI**: Responsive React frontend with platform filtering and detailed modals
+
+### 🎛️ **ArgoCD GitOps Dashboard**
+- **URL**: [argocd.navillasa.dev](https://argocd.navillasa.dev) (provisioning)
+- **Temporary**: `kubectl port-forward svc/argocd-server -n argocd 8080:443` → [localhost:8080](https://localhost:8080)
+- **Login**: admin / `UhvbplzHbMSy2yEC`
+- **Features**: Real-time GitOps deployment visualization and management
 
 ---
 
