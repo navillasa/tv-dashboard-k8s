@@ -37,19 +37,34 @@ const PLATFORM_KEY_ALIASES: Record<string, string> = {
 // Helper function to fetch detailed show information
 async function fetchShowDetails(showId: string) {
   try {
-    const url = `https://api.themoviedb.org/3/tv/${showId}?api_key=${TMDB_API_KEY}`;
-    const res = await fetch(url);
-    const data = await res.json();
+    // Fetch show details and cast in parallel
+    const [showRes, castRes] = await Promise.all([
+      fetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=${TMDB_API_KEY}`),
+      fetch(`https://api.themoviedb.org/3/tv/${showId}/credits?api_key=${TMDB_API_KEY}`)
+    ]);
+    
+    const [showData, castData] = await Promise.all([
+      showRes.json(),
+      castRes.json()
+    ]);
+    
+    // Extract starring cast (top 5 main cast members)
+    const starring = (castData.cast || [])
+      .slice(0, 5)
+      .map((actor: any) => actor.name)
+      .filter(Boolean);
     
     return {
-      numberOfSeasons: data.number_of_seasons || 0,
-      numberOfEpisodes: data.number_of_episodes || 0,
-      seasons: (data.seasons || [])
+      numberOfSeasons: showData.number_of_seasons || 0,
+      numberOfEpisodes: showData.number_of_episodes || 0,
+      starring,
+      seasons: (showData.seasons || [])
         .filter((season: any) => season.season_number > 0) // Filter out specials
         .map((season: any) => ({
           seasonNumber: season.season_number,
           episodeCount: season.episode_count,
-          airDate: season.air_date || ""
+          airDate: season.air_date || "",
+          year: season.air_date ? season.air_date.split('-')[0] : ""
         }))
     };
   } catch (err) {
@@ -57,6 +72,7 @@ async function fetchShowDetails(showId: string) {
     return {
       numberOfSeasons: 0,
       numberOfEpisodes: 0,
+      starring: [],
       seasons: []
     };
   }

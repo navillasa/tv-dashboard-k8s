@@ -30,10 +30,12 @@ export interface Show {
   popularity?: number;
   numberOfSeasons?: number;
   numberOfEpisodes?: number;
+  starring?: string[];    // Cast/starring information
   seasons?: Array<{
     seasonNumber: number;
     episodeCount: number;
     airDate: string;
+    year?: string;        // Extracted year from airDate for display
   }>;
 }
 

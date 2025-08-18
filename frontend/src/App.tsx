@@ -71,6 +71,7 @@ function App() {
   const [selectedShow, setSelectedShow] = useState<any>(null);
   const [selectedShowIndex, setSelectedShowIndex] = useState<number | undefined>(undefined);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showAllSeasons, setShowAllSeasons] = useState(false);
 
   const openModal = (show: any, index?: number) => {
     setSelectedShow(show);
@@ -81,67 +82,69 @@ function App() {
   const closeModal = () => {
     setSelectedShow(null);
     setIsModalOpen(false);
+    setShowAllSeasons(false);
   };
 
-  const formatAirDate = (airDate: string) => {
+  // Helper to get first aired year
+  const getFirstAiredYear = (airDate: string) => {
     if (!airDate) return "Unknown";
-    
-    const date = new Date(airDate);
-    const startYear = date.getFullYear();
-    const currentYear = new Date().getFullYear();
-    
-    // If the show started this year, show month and year
-    if (startYear === currentYear) {
-      const month = date.toLocaleDateString('en-US', { month: 'long' });
-      return `${month} ${startYear} - Present`;
-    }
-    
-    // If it's from last year, it might still be airing
-    if (startYear === currentYear - 1) {
-      return `${startYear} - Present`;
-    }
-    
-    // For older shows, just show when it first aired since we don't know the end date
-    return `First aired: ${startYear}`;
+    return new Date(airDate).getFullYear().toString();
   };
 
-  const formatSeasonInfo = (show: any) => {
-    if (!show.numberOfSeasons) return null;
-    
-    const parts = [];
-    
-    // Basic season/episode info
-    if (show.numberOfSeasons === 1) {
-      parts.push(`1 season`);
-    } else {
-      parts.push(`${show.numberOfSeasons} seasons`);
-    }
-    
-    if (show.numberOfEpisodes) {
-      parts.push(`${show.numberOfEpisodes} episodes total`);
-    }
-    
-    return parts.join(' • ');
+  // Helper to format starring cast
+  const formatStarring = (starring: string[]) => {
+    if (!starring || starring.length === 0) return null;
+    return starring.slice(0, 3).join(', '); // Show top 3 actors
   };
 
-  const formatUpcomingSeason = (show: any) => {
-    if (!show.seasons) return null;
+  // Helper to format season details with status info
+  const formatSeasonDetails = (show: any) => {
+    if (!show.seasons || show.seasons.length === 0) return [];
     
     const currentYear = new Date().getFullYear();
-    const upcomingSeasons = show.seasons.filter((season: any) => {
-      const seasonYear = new Date(season.airDate).getFullYear();
-      return seasonYear > currentYear || 
-             (seasonYear === currentYear && new Date(season.airDate) > new Date());
+    const currentDate = new Date();
+    
+    return show.seasons.map((season: any) => {
+      const year = season.year || (season.airDate ? season.airDate.split('-')[0] : '');
+      const episodes = season.episodeCount || 0;
+      const airDate = season.airDate ? new Date(season.airDate) : null;
+      
+      let status = '';
+      let statusColor = '#666';
+      
+      if (airDate) {
+        if (airDate > currentDate) {
+          // Future season
+          const month = airDate.toLocaleDateString('en-US', { month: 'long' });
+          status = `Coming ${month} ${year}`;
+          statusColor = '#28a745';
+        } else if (parseInt(year) === currentYear) {
+          // Current year - might be airing now
+          status = episodes > 0 ? 'Aired' : 'Airing now';
+          statusColor = episodes > 0 ? '#666' : '#007bff';
+        } else {
+          // Past season
+          status = 'Aired';
+          statusColor = '#666';
+        }
+      } else if (episodes === 0 && !year) {
+        // Unknown season info
+        status = 'TBA';
+        statusColor = '#ffc107';
+      } else {
+        status = 'Aired';
+        statusColor = '#666';
+      }
+      
+      return {
+        seasonNumber: season.seasonNumber,
+        year: year || 'TBA',
+        episodes: episodes > 0 ? episodes : 'TBA',
+        status,
+        statusColor,
+        episodeText: episodes > 0 ? `${episodes} episodes` : 'Episodes TBA'
+      };
     });
-    
-    if (upcomingSeasons.length === 0) return null;
-    
-    const nextSeason = upcomingSeasons[0];
-    const airDate = new Date(nextSeason.airDate);
-    const month = airDate.toLocaleDateString('en-US', { month: 'long' });
-    const year = airDate.getFullYear();
-    
-    return `Season ${nextSeason.seasonNumber} coming ${month} ${year}`;
   };
 
   const getWatchLink = (platform: string, showTitle: string) => {
@@ -188,6 +191,22 @@ function App() {
     const newR = Math.round(r + (255 - r) * lightenFactor);
     const newG = Math.round(g + (255 - g) * lightenFactor);
     const newB = Math.round(b + (255 - b) * lightenFactor);
+    
+    return `rgb(${newR}, ${newG}, ${newB})`;
+  };
+
+  // Create a darker accent color for 3D effect
+  const getDarkerAccent = (hexColor: string) => {
+    // Convert hex to RGB
+    const r = parseInt(hexColor.slice(1, 3), 16);
+    const g = parseInt(hexColor.slice(3, 5), 16);
+    const b = parseInt(hexColor.slice(5, 7), 16);
+    
+    // Make it darker by reducing values
+    const darkenFactor = 0.3; // How much to darken
+    const newR = Math.round(r * (1 - darkenFactor));
+    const newG = Math.round(g * (1 - darkenFactor));
+    const newB = Math.round(b * (1 - darkenFactor));
     
     return `rgb(${newR}, ${newG}, ${newB})`;
   };
@@ -256,19 +275,61 @@ function App() {
           <div style={{ padding: "30px" }}>
             {/* Poster and title section */}
             <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
-              {show.posterUrl && (
-                <img
-                  src={show.posterUrl}
-                  alt={show.title}
-                  style={{
-                    width: "150px",
-                    height: "225px",
-                    objectFit: "cover",
-                    borderRadius: 12,
-                    flexShrink: 0
-                  }}
-                />
-              )}
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "15px" }}>
+                {show.posterUrl && (
+                  <img
+                    src={show.posterUrl}
+                    alt={show.title}
+                    style={{
+                      width: "150px",
+                      height: "225px",
+                      objectFit: "cover",
+                      borderRadius: 12,
+                      flexShrink: 0
+                    }}
+                  />
+                )}
+                
+                {/* Watch buttons under poster */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px", width: "150px" }}>
+                  {(show.platforms || [show.platform]).map((platform: string) => {
+                    const platformInfo = ALL_PLATFORMS.find(p => p.key === platform);
+                    if (!platformInfo) return null;
+                    
+                    return (
+                      <a
+                        key={platform}
+                        href={getWatchLink(platform, show.title)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: "6px",
+                          background: platformInfo.color,
+                          color: "#fff",
+                          padding: "8px 12px",
+                          borderRadius: 20,
+                          textDecoration: "none",
+                          fontWeight: 600,
+                          fontSize: "0.75rem",
+                          boxShadow: "0 3px 10px rgba(0,0,0,0.2)",
+                          transition: "transform 0.2s ease",
+                          border: "none",
+                          textAlign: "center"
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-2px)"}
+                        onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
+                      >
+                        <span>{platformInfo.logo}</span>
+                        <span>Watch on {platformInfo.label}</span>
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
+              
               <div style={{ flex: 1 }}>
                 <h2 style={{
                   fontSize: "1.8rem",
@@ -295,7 +356,7 @@ function App() {
                     border: showIndex < 3 ? "1px solid #ffd700" : "none",
                     marginBottom: "15px"
                   }}>
-                    {showIndex < 3 ? "🏆" : "📈"} #{showIndex + 1} Trending
+                    {showIndex < 3 ? "🏆" : "📈"} #{showIndex + 1} Trending on {ALL_PLATFORMS.find(p => p.key === show.platform)?.label || show.platform}
                   </div>
                 )}
               </div>
@@ -317,90 +378,193 @@ function App() {
               </div>
             )}
 
-            {/* Show details */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {show.airDate && (
-                <div style={{
-                  fontSize: "0.9rem",
-                  color: "#6c757d",
-                  fontWeight: 500,
-                  padding: "8px 15px",
-                  background: "#e9ecef",
-                  borderRadius: 8,
-                  display: "inline-block",
-                  alignSelf: "flex-start"
-                }}>
-                  📅 {formatAirDate(show.airDate)}
-                </div>
-              )}
+            {/* Show Info Table */}
+            <div style={{
+              background: "#f8f9fa",
+              borderRadius: 12,
+              padding: "20px",
+              marginBottom: "25px",
+              border: "1px solid #e9ecef"
+            }}>
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "140px 1fr",
+                gap: "12px",
+                fontSize: "0.95rem"
+              }}>
+                {/* Starring cast */}
+                {formatStarring(show.starring) && (
+                  <>
+                    <div style={{ fontWeight: 600, color: "#495057" }}>Starring:</div>
+                    <div style={{ color: "#666" }}>{formatStarring(show.starring)}</div>
+                  </>
+                )}
 
-              {formatSeasonInfo(show) && (
-                <div style={{
-                  fontSize: "0.9rem",
-                  color: "#495057",
-                  fontWeight: 500,
-                  padding: "8px 15px",
-                  background: "#d1ecf1",
-                  borderRadius: 8,
-                  display: "inline-block",
-                  alignSelf: "flex-start"
-                }}>
-                  📺 {formatSeasonInfo(show)}
-                </div>
-              )}
+                {/* First aired */}
+                {show.airDate && (
+                  <>
+                    <div style={{ fontWeight: 600, color: "#495057" }}>First Aired:</div>
+                    <div style={{ color: "#666" }}>{getFirstAiredYear(show.airDate)}</div>
+                  </>
+                )}
 
-              {formatUpcomingSeason(show) && (
-                <div style={{
-                  fontSize: "0.9rem",
-                  color: "#155724",
-                  fontWeight: 500,
-                  padding: "8px 15px",
-                  background: "#d4edda",
-                  borderRadius: 8,
-                  display: "inline-block",
-                  alignSelf: "flex-start"
-                }}>
-                  🚀 {formatUpcomingSeason(show)}
-                </div>
-              )}
-              
-              {/* Watch buttons for each platform */}
-              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "15px" }}>
-                {(show.platforms || [show.platform]).map((platform: string) => {
-                  const platformInfo = ALL_PLATFORMS.find(p => p.key === platform);
-                  if (!platformInfo) return null;
-                  
-                  return (
-                    <a
-                      key={platform}
-                      href={getWatchLink(platform, show.title)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "6px",
-                        background: platformInfo.color,
-                        color: "#fff",
-                        padding: "10px 16px",
-                        borderRadius: 20,
-                        textDecoration: "none",
-                        fontWeight: 600,
-                        fontSize: "0.85rem",
-                        boxShadow: "0 3px 10px rgba(0,0,0,0.2)",
-                        transition: "transform 0.2s ease",
-                        border: "none"
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-2px)"}
-                      onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
-                    >
-                      <span>{platformInfo.logo}</span>
-                      <span>Watch on {platformInfo.label}</span>
-                    </a>
-                  );
-                })}
+                {/* Total seasons */}
+                {show.numberOfSeasons && (
+                  <>
+                    <div style={{ fontWeight: 600, color: "#495057" }}>Total Seasons:</div>
+                    <div style={{ color: "#666" }}>{show.numberOfSeasons}</div>
+                  </>
+                )}
+
+                {/* Total episodes */}
+                {show.numberOfEpisodes && (
+                  <>
+                    <div style={{ fontWeight: 600, color: "#495057" }}>Total Episodes:</div>
+                    <div style={{ color: "#666" }}>{show.numberOfEpisodes}</div>
+                  </>
+                )}
               </div>
             </div>
+
+            {/* Seasons Table */}
+            {formatSeasonDetails(show).length > 0 && (
+              <div style={{
+                background: "#ffffff",
+                borderRadius: 12,
+                padding: "20px",
+                marginBottom: "25px",
+                border: "1px solid #e9ecef",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.05)"
+              }}>
+                <div style={{
+                  overflowX: "auto"
+                }}>
+                  <table style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    fontSize: "0.9rem"
+                  }}>
+                    <thead>
+                      <tr style={{
+                        background: "#f8f9fa",
+                        borderBottom: "2px solid #dee2e6"
+                      }}>
+                        <th style={{
+                          padding: "12px 8px",
+                          textAlign: "left",
+                          fontWeight: 600,
+                          color: "#495057"
+                        }}>
+                          Season
+                        </th>
+                        <th style={{
+                          padding: "12px 8px",
+                          textAlign: "left",
+                          fontWeight: 600,
+                          color: "#495057"
+                        }}>
+                          Year
+                        </th>
+                        <th style={{
+                          padding: "12px 8px",
+                          textAlign: "left",
+                          fontWeight: 600,
+                          color: "#495057"
+                        }}>
+                          Episodes
+                        </th>
+                        <th style={{
+                          padding: "12px 8px",
+                          textAlign: "left",
+                          fontWeight: 600,
+                          color: "#495057"
+                        }}>
+                          Status
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {formatSeasonDetails(show)
+                        .slice(0, showAllSeasons ? undefined : 3)
+                        .map((season, index) => (
+                        <tr key={season.seasonNumber} style={{
+                          borderBottom: index < (showAllSeasons ? formatSeasonDetails(show).length : Math.min(3, formatSeasonDetails(show).length)) - 1 ? "1px solid #e9ecef" : "none"
+                        }}>
+                          <td style={{
+                            padding: "12px 8px",
+                            fontWeight: 500,
+                            color: "#333"
+                          }}>
+                            Season {season.seasonNumber}
+                          </td>
+                          <td style={{
+                            padding: "12px 8px",
+                            color: "#666"
+                          }}>
+                            {season.year}
+                          </td>
+                          <td style={{
+                            padding: "12px 8px",
+                            color: "#666"
+                          }}>
+                            {season.episodeText}
+                          </td>
+                          <td style={{
+                            padding: "12px 8px"
+                          }}>
+                            <span style={{
+                              color: season.statusColor,
+                              fontWeight: 500,
+                              padding: "4px 8px",
+                              background: season.statusColor === '#28a745' ? '#d4edda' : 
+                                         season.statusColor === '#007bff' ? '#cce7ff' :
+                                         season.statusColor === '#ffc107' ? '#fff3cd' : 'transparent',
+                              borderRadius: "6px",
+                              fontSize: "0.85rem"
+                            }}>
+                              {season.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                
+                {/* Expand/Collapse button for seasons > 3 */}
+                {formatSeasonDetails(show).length > 3 && (
+                  <div style={{ marginTop: "15px", textAlign: "center" }}>
+                    <button
+                      onClick={() => setShowAllSeasons(!showAllSeasons)}
+                      style={{
+                        background: "none",
+                        border: "1px solid #dee2e6",
+                        borderRadius: "8px",
+                        padding: "8px 16px",
+                        color: "#667eea",
+                        fontSize: "0.85rem",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        transition: "all 0.2s ease"
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "#f8f9fa";
+                        e.currentTarget.style.borderColor = "#667eea";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "none";
+                        e.currentTarget.style.borderColor = "#dee2e6";
+                      }}
+                    >
+                      {showAllSeasons ? 
+                        `Show less (${formatSeasonDetails(show).length - 3} seasons hidden)` : 
+                        `Show all ${formatSeasonDetails(show).length} seasons (+${formatSeasonDetails(show).length - 3} more)`
+                      }
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -589,7 +753,7 @@ function App() {
                       <img
                         src={show.posterUrl}
                         alt={show.title}
-                        style={{ 
+                        style={{
                           width: "100%", 
                           height: platformFilter.length === 1 ? "250px" : "160px",
                           objectFit: "cover",
