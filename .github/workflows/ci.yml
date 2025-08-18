@@ -9,28 +9,18 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    env:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: tvshows
-      TMDB_API_KEY: test_key_not_needed_for_lint
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Build lint image
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml build lint
+        run: docker compose -f docker-compose.test.yml build lint
 
       - name: Run lint
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm lint
+        run: docker compose -f docker-compose.test.yml run --rm lint
 
   test:
     runs-on: ubuntu-latest
-    env:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: tvshows
-      TMDB_API_KEY: test_mock_key
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -39,19 +29,14 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Run tests using Docker Compose
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up --build --abort-on-container-exit backend_test
+        run: docker compose -f docker-compose.test.yml up --build --abort-on-container-exit backend_test
 
       - name: Show backend_test logs if it fails
         if: failure()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs backend_test
+        run: docker compose -f docker-compose.test.yml logs backend_test
 
   test-frontend:
     runs-on: ubuntu-latest
-    env:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: tvshows
-      TMDB_API_KEY: test_key_not_needed_for_frontend
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -60,10 +45,10 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build frontend image
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml build frontend
+        run: docker compose -f docker-compose.test.yml build frontend
 
       - name: Start frontend service
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d frontend
+        run: docker compose -f docker-compose.test.yml up -d frontend
 
       - name: Wait for frontend to be ready
         run: sleep 10
@@ -73,4 +58,4 @@ jobs:
 
       - name: Stop services
         if: always()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down
+        run: docker compose -f docker-compose.test.yml down

@@ -1,0 +1,37 @@
+services:
+  db_test:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: tvshows_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_test_data:/var/lib/postgresql/data
+
+  backend_test:
+    build: ./backend
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db_test:5432/tvshows_test
+      - TMDB_API_KEY=test_mock_key
+    depends_on:
+      - db_test
+    command: ["./wait-for-it.sh", "db_test:5432", "--", "npm", "test"]
+
+  lint:
+    build: ./backend
+    environment:
+      - TMDB_API_KEY=test_key_not_needed_for_lint
+    command: npm run lint
+
+  frontend:
+    build:
+      context: ./frontend
+    environment:
+      - VITE_API_URL=http://localhost:4000/api
+    ports:
+      - "3000:80"
+
+volumes:
+  db_test_data:
