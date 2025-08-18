@@ -12,24 +12,24 @@ A comprehensive TV show aggregation platform built to demonstrate enterprise-lev
 
 ## 🌟 **Key Features**
 
-### 🎯 **Production-Ready Deployment**
-- ✅ **Live Application**: [tv-hub.navillasa.dev](http://tv-hub.navillasa.dev)
-- ✅ **GKE Autopilot**: Cost-effective Kubernetes with auto-scaling
-- ✅ **Custom Domain + SSL**: Automatic certificate management
-- ✅ **GitOps with ArgoCD**: Continuous deployment from Git
+### 👾 **Production-Ready Deployment**
+- **Live Application**: [tv-hub.navillasa.dev](http://tv-hub.navillasa.dev)
+- **GKE Autopilot**: Cost-effective Kubernetes with auto-scaling
+- **Custom Domain + SSL**: Automatic certificate management
+- **GitOps with ArgoCD**: Continuous deployment from Git
 
 ### 🔧 **DevOps Infrastructure** 
-- ✅ **Infrastructure as Code**: Terraform for GCP resources
-- ✅ **Multi-Environment Setup**: Dev/staging/prod with Kustomize overlays  
-- ✅ **CI/CD Pipeline**: GitHub Actions with testing and security
-- ✅ **Container Registry**: Google Container Registry integration
-- ✅ **Security-First**: External secrets management (no hardcoded values)
+- **Infrastructure as Code**: Terraform for GCP resources
+- **Multi-Environment Setup**: Dev/staging/prod with Kustomize overlays  
+- **CI/CD Pipeline**: GitHub Actions with testing and security
+- **Container Registry**: Google Container Registry integration
+- **Security-First**: External secrets management
 
-### 🚀 **Coming Next**
-- 🔄 **Monitoring Stack**: Prometheus + Grafana observability
-- 🔄 **HashiCorp Vault**: External secrets management  
-- 🔄 **Redis Caching**: Performance optimization
-- 🔄 **Cost Dashboard**: Resource monitoring and optimization
+### 🔄 **Coming Next**
+- **Monitoring Stack**: Prometheus + Grafana observability
+- **HashiCorp Vault**: External secrets management  
+- **Redis Caching**: Performance optimization
+- **Cost Dashboard**: Resource monitoring and optimization
 
 ---
 
@@ -42,29 +42,26 @@ A comprehensive TV show aggregation platform built to demonstrate enterprise-lev
 - **UI**: Responsive React frontend with platform filtering and detailed modals
 
 ### 🎛️ **ArgoCD GitOps Dashboard**
-- **URL**: [argocd.navillasa.dev](https://argocd.navillasa.dev) (provisioning)
-- **Temporary**: `kubectl port-forward svc/argocd-server -n argocd 8080:443` → [localhost:8080](https://localhost:8080)
-- **Login**: admin / `UhvbplzHbMSy2yEC`
-- **Features**: Real-time GitOps deployment visualization and management
+- **URL**: [argocd.navillasa.dev](https://argocd.navillasa.dev) (Only I can use it for now though 🤫)
 
 ---
 
 ## 🏗️ **Architecture Overview**
 
 ```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   React Frontend │    │  Node.js Backend │    │   PostgreSQL    │
-│   (Nginx)        │◄──►│   (Express API)  │◄──►│   Database      │
-│   Port: 80       │    │   Port: 4000     │    │   Port: 5432    │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       │
-         └───────────────────────┼───────────────────────┘
-                                 │
-                    ┌─────────────────┐
-                    │   External APIs  │
-                    │  • TMDB         │
-                    │  • TVmaze       │ 
-                    └─────────────────┘
+┌──────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   React Frontend │    │ Node.js Backend │    │   PostgreSQL    │
+│   (Nginx)        │◄──►│  (Express API)  │◄──►│   Database      │
+│   Port: 80       │    │  Port: 4000     │    │   Port: 5432    │
+└──────────────────┘    └─────────────────┘    └─────────────────┘
+          │                       │                       │
+          └───────────────────────┼───────────────────────┘
+                                  │
+                     ┌─────────────────┐
+                     │  External APIs  │
+                     │  • TMDB         │
+                     │  • TVmaze       │ 
+                     └─────────────────┘
 ```
 
 ### **Technology Stack**
@@ -85,11 +82,11 @@ A comprehensive TV show aggregation platform built to demonstrate enterprise-lev
 ---
 
 ### **Application Features**
-- ✅ Multi-platform TV show aggregation from TMDB and TVmaze APIs
-- ✅ Trending rankings with platform-specific popularity scores
-- ✅ Responsive UI with platform-branded color schemes
-- ✅ Detailed show modals with cast, seasons, and watch links
-- ✅ Real-time data with intelligent caching strategies
+- Multi-platform TV show aggregation from TMDB and TVmaze APIs
+- Trending rankings with platform-specific popularity scores
+- Responsive UI with platform-branded color schemes
+- Detailed show modals with cast, seasons, and watch links
+- Real-time data with intelligent caching strategies
 
 ---
 
@@ -171,36 +168,36 @@ make k8s-status
 ## 🔍 **Current Capabilities**
 
 ### **✅ Implemented**
-- [x] **Full-stack application** with React frontend and Node.js backend
-- [x] **Multi-API integration** aggregating data from TMDB and TVmaze
-- [x] **Comprehensive CI/CD** with automated testing and deployment
-- [x] **Infrastructure as Code** with Terraform on GCP
-- [x] **Container orchestration** with Kubernetes manifests
-- [x] **Security best practices** with secrets management and environment isolation
-- [x] **Advanced data aggregation** with deduplication and platform ranking
+- [x] Full-stack application with React frontend and Node.js backend
+- [x] Multi-API integration aggregating data from TMDB and TVmaze
+- [x] Comprehensive CI/CD with automated testing and deployment
+- [x] Infrastructure as Code with Terraform on GCP
+- [x] Container orchestration with Kubernetes manifests
+- [x] Security best practices with secrets management and environment isolation
+- [x] Advanced data aggregation with deduplication and platform ranking
 
 ### **🚧 In Progress**
 
 #### **Phase 1: GitOps Foundation**
-- [ ] **Multi-environment setup** with Kustomize overlays (dev/staging/prod)
-- [ ] **ArgoCD deployment** with automated GitOps workflows
-- [ ] **Environment promotion** pipeline with approval gates
+- [ ] Multi-environment setup with Kustomize overlays (dev/staging/prod)
+- [x] ArgoCD deployment with automated GitOps workflows
+- [ ] Environment promotion pipeline with approval gates
 
 #### **Phase 2: Observability Stack**
-- [ ] **Prometheus + Grafana** deployment via GitOps
-- [ ] **Custom business metrics** (API calls, user interactions, cache performance)
-- [ ] **Infrastructure monitoring** (resource usage, cost tracking)
-- [ ] **Alerting rules** for service health and performance thresholds
+- [ ] Prometheus + Grafana deployment via GitOps
+- [ ] Custom business metrics (API calls, user interactions, cache performance)
+- [ ] Infrastructure monitoring (resource usage, cost tracking)
+- [ ] Alerting rules for service health and performance thresholds
 
 #### **Phase 3: Security & Secrets**
-- [ ] **HashiCorp Vault** integration for secrets management
-- [ ] **External Secrets Operator** for K8s secret synchronization
-- [ ] **RBAC and Network Policies** for zero-trust security
+- [ ] HashiCorp Vault integration for secrets management
+- [ ] External Secrets Operator for K8s secret synchronization
+- [ ] RBAC and Network Policies for zero-trust security
 
 #### **Phase 4: Performance & Scale**
-- [ ] **Redis caching layer** for API response optimization
-- [ ] **Horizontal Pod Autoscaling** based on demand
-- [ ] **Cost optimization dashboard** with resource usage insights
+- [ ] Redis caching layer for API response optimization
+- [ ] Horizontal Pod Autoscaling based on demand
+- [ ] Cost optimization dashboard with resource usage insights
 
 ---
 
