@@ -37,14 +37,25 @@ jobs:
 
   test-frontend:
     runs-on: ubuntu-latest
-    services:
-      frontend:
-        image: tv-dashboard-k8s-frontend
-        ports:
-          - 3000:80
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build frontend image
+        run: docker compose build frontend
+
+      - name: Start frontend service
+        run: docker compose up -d frontend
+
+      - name: Wait for frontend to be ready
+        run: sleep 10
+
       - name: Healthcheck frontend
         run: ./frontend/healthcheck.sh http://localhost:3000
+
+      - name: Stop services
+        if: always()
+        run: docker compose down
