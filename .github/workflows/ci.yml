@@ -51,7 +51,7 @@ jobs:
         run: docker compose -f docker-compose.test.yml up -d frontend
 
       - name: Wait for frontend to be ready
-        run: sleep 10
+        run: sleep 15
 
       - name: Healthcheck frontend
         run: ./frontend/healthcheck.sh http://localhost:3000
