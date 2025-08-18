@@ -21,4 +21,4 @@ images:
   - name: tv-dashboard-backend
     newTag: v1.1
   - name: tv-dashboard-frontend
-    newTag: v1.1
+    newTag: v1.2
