@@ -1,0 +1,13 @@
+# Copy this file to terraform.tfvars and fill in your values
+
+# Your GCP project ID
+project_id = "tv-dashboard-k8s"
+
+# GCP region for the Autopilot cluster (regional for HA)
+region = "us-east1"
+
+# Optional: zone for any zonal resources
+zone = "us-east1-b"
+
+# Name for your GKE Autopilot cluster
+cluster_name = "tv-dashboard-autopilot"

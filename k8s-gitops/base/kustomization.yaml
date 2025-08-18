@@ -10,6 +10,7 @@ resources:
   - postgres-storage.yaml
   - backend-deployment.yaml
   - backend-service.yaml
+  - backend-alias-service.yaml
   - frontend-deployment.yaml
   - frontend-service.yaml
   - ingress.yaml
@@ -20,6 +21,8 @@ commonLabels:
 
 images:
   - name: tv-dashboard-backend
+    newName: gcr.io/tv-dashboard-k8s/tv-dashboard-backend
     newTag: latest
   - name: tv-dashboard-frontend
+    newName: gcr.io/tv-dashboard-k8s/tv-dashboard-frontend
     newTag: latest

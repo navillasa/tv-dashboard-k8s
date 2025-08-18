@@ -19,27 +19,6 @@ resource "google_container_cluster" "primary" {
   deletion_protection = false
 }
 
-resource "google_container_node_pool" "primary_nodes" {
-  name       = "primary-node-pool"
-  location   = var.zone
-  cluster    = google_container_cluster.primary.name
-
-  node_count = 1
-
-  node_config {
-    preemptible  = true
-    machine_type = "e2-micro" # eligible for free-tier (1 always-free per month)
-    oauth_scopes = [
-      "https://www.googleapis.com/auth/cloud-platform",
-    ]
-    labels = {
-      env = "dev"
-    }
-    metadata = {
-      disable-legacy-endpoints = "true"
-    }
-  }
-}
 
 # Optionally, create a service account for K8s management
 resource "google_service_account" "k8s" {

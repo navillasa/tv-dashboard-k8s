@@ -15,6 +15,15 @@ app.get("/", (_req, res) => {
   res.json({ message: "TV Dashboard Backend is running!" });
 });
 
+// Health check endpoint for Kubernetes probes
+app.get("/health", (_req, res) => {
+  res.status(200).json({ 
+    status: "healthy", 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
 app.use("/api/shows", showsRouter);
 
 app.listen(PORT, () => {

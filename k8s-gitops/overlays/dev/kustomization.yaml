@@ -19,6 +19,6 @@ patchesStrategicMerge:
 
 images:
   - name: tv-dashboard-backend
-    newTag: dev-latest
+    newTag: v1.1
   - name: tv-dashboard-frontend
-    newTag: dev-latest
+    newTag: v1.1
