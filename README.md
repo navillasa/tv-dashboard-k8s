@@ -10,15 +10,14 @@ A comprehensive TV show aggregation platform built to demonstrate enterprise-lev
 
 ---
 
-## 🎯 **Key Features**
-
-- ✅ **Multi-environment GitOps** workflows (dev → staging → prod)
-- ✅ **Infrastructure as Code** with Terraform on GCP
-- ✅ **Comprehensive CI/CD** with GitHub Actions, testing, and security scanning
-- ✅ **Container orchestration** with Kubernetes
-- ✅ **Observability stack** with Prometheus, Grafana, and custom metrics
-- ✅ **Security-first** approach with HashiCorp Vault integration
-- ✅ **Cost optimization** strategies for cloud resources
+## 🌟 **Key Features**
+- ✅ Multi-environment GitOps workflows (dev → staging → prod)
+- ️✅ Infrastructure as Code with Terraform on GCP
+- ✅ Comprehensive CI/CD with GitHub Actions, testing, and security scanning
+- ️✅ Container orchestration with Kubernetes
+- ✅ Observability stack with Prometheus, Grafana, and custom metrics
+- ✅ Security-first approach with HashiCorp Vault integration
+- ✅ Cost optimization strategies for cloud resources
 
 ---
 
@@ -58,11 +57,11 @@ A comprehensive TV show aggregation platform built to demonstrate enterprise-lev
 ---
 
 ### **Application Features**
-- 📊 **Multi-platform TV show aggregation** from TMDB and TVmaze APIs
-- 🏆 **Trending rankings** with platform-specific popularity scores
-- 🎨 **Responsive UI** with platform-branded color schemes  
-- �📋 **Detailed show modals** with cast, seasons, and watch links
-- ⚡ **Real-time data** with intelligent caching strategies
+- ✅ Multi-platform TV show aggregation from TMDB and TVmaze APIs
+- ✅ Trending rankings with platform-specific popularity scores
+- ✅ Responsive UI with platform-branded color schemes
+- ✅ Detailed show modals with cast, seasons, and watch links
+- ✅ Real-time data with intelligent caching strategies
 
 ---
 
