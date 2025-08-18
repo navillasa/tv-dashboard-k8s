@@ -8,7 +8,7 @@ metadata:
     networking.gke.io/managed-certificates: "tv-dashboard-ssl"
 spec:
   rules:
-  - host: tv-hub.navillasa.dev
+  - host: dev.tv-hub.navillasa.dev
     http:
       paths:
       - path: /api

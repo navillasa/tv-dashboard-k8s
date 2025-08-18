@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tv-dashboard-prod
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/navillasa/tv-dashboard-k8s.git
+    targetRevision: HEAD
+    path: k8s-gitops/overlays/prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: tv-dashboard-prod
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  # Ignore GKE Autopilot-managed resource adjustments
+  ignoreDifferences:
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+    - /spec/template/spec/containers/0/resources/requests/memory
+    - /spec/template/spec/containers/0/resources/requests/ephemeral-storage
+    - /spec/template/spec/containers/0/resources/limits/ephemeral-storage

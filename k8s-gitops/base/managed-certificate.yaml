@@ -4,4 +4,4 @@ metadata:
   name: tv-dashboard-ssl
 spec:
   domains:
-    - tv-hub.navillasa.dev
+    - dev.tv-hub.navillasa.dev
