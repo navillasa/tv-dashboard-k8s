@@ -14,10 +14,10 @@ resources:
   - frontend-deployment.yaml
   - frontend-service.yaml
   - ingress.yaml
-  - managed-certificate.yaml
 
-commonLabels:
-  app.kubernetes.io/name: tv-dashboard
-  app.kubernetes.io/version: "1.0.0"
+labels:
+  - pairs:
+      app.kubernetes.io/name: tv-dashboard
+      app.kubernetes.io/version: "1.0.0"
 
 # Images are managed by environment overlays

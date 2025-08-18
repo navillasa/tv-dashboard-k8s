@@ -10,12 +10,13 @@ resources:
 
 namePrefix: dev-
 
-commonLabels:
-  environment: dev
+labels:
+  - pairs:
+      environment: dev
 
-patchesStrategicMerge:
-  - postgres-dev-patch.yaml
-  - backend-dev-patch.yaml
+patches:
+  - path: postgres-dev-patch.yaml
+  - path: backend-dev-patch.yaml
 
 images:
   - name: tv-dashboard-backend

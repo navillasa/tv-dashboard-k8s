@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ssl-certificates
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/navillasa/tv-dashboard-k8s.git
+    targetRevision: HEAD
+    path: k8s-gitops/ssl-certificates
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ssl-certificates
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
