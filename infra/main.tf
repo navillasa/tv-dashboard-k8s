@@ -6,14 +6,16 @@ provider "google" {
 
 resource "google_container_cluster" "primary" {
   name     = var.cluster_name
-  location = var.zone
-
-  remove_default_node_pool = true
-  initial_node_count       = 1
-
-  # Cheapest (zonal, no control plane fee)
+  location = var.region  # Regional for high availability
+  
+  # Enable Autopilot mode
+  enable_autopilot = true
+  
+  # Network configuration
   network    = "default"
   subnetwork = "default"
+  
+  # Security and compliance
   deletion_protection = false
 }
 
