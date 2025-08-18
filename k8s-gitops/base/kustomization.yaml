@@ -20,10 +20,4 @@ commonLabels:
   app.kubernetes.io/name: tv-dashboard
   app.kubernetes.io/version: "1.0.0"
 
-images:
-  - name: tv-dashboard-backend
-    newName: gcr.io/tv-dashboard-k8s/tv-dashboard-backend
-    newTag: latest
-  - name: tv-dashboard-frontend
-    newName: gcr.io/tv-dashboard-k8s/tv-dashboard-frontend
-    newTag: latest
+# Images are managed by environment overlays
