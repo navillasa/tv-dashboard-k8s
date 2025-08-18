@@ -6,7 +6,7 @@ namespace: tv-dashboard-dev
 resources:
   - ../../base
   - external-secrets-service-account.yaml
-  - external-secret-database.yaml
+  - external-secret-database.yaml  
   - external-secret-api.yaml
   # Note: Secrets now managed by External Secrets Operator + Vault
 

@@ -6,4 +6,10 @@ kubeconfig.yaml
 terraform.tfstate
 terraform.tfstate.backup
 .env
+.env.*
 DEMO_GUIDE.md
+*unseal*key*
+*.pem
+*.key
+*secret*
+vault-keys.txt
