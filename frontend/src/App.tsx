@@ -97,6 +97,30 @@ function App() {
     return starring.slice(0, 3).join(', '); // Show top 3 actors
   };
 
+  // Helper to get all platform rankings for a show
+  const getAllPlatformRankings = (show: any) => {
+    const rankings: Array<{platform: string, rank: number, platformInfo: any}> = [];
+    
+    // Look through all platforms to find where this show appears
+    ALL_PLATFORMS.forEach(platformInfo => {
+      const platformShows = showsByPlatform[platformInfo.key] || [];
+      const showIndex = platformShows.findIndex(s => 
+        s.title.toLowerCase() === show.title.toLowerCase()
+      );
+      
+      if (showIndex !== -1) {
+        rankings.push({
+          platform: platformInfo.key,
+          rank: showIndex + 1,
+          platformInfo
+        });
+      }
+    });
+    
+    // Sort by rank (best rankings first)
+    return rankings.sort((a, b) => a.rank - b.rank);
+  };
+
   // Helper to format season details with status info
   const formatSeasonDetails = (show: any) => {
     if (!show.seasons || show.seasons.length === 0) return [];
@@ -237,7 +261,7 @@ function App() {
           style={{
             backgroundColor: "#ffffff",
             borderRadius: 20,
-            maxWidth: "600px",
+            maxWidth: window.innerWidth <= 768 ? "95%" : "600px",
             width: "100%",
             maxHeight: "90vh",
             overflow: "auto",
@@ -272,9 +296,15 @@ function App() {
           </button>
 
           {/* Modal content */}
-          <div style={{ padding: "30px" }}>
+          <div style={{ padding: window.innerWidth <= 768 ? "20px" : "30px" }}>
             {/* Poster and title section */}
-            <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
+            <div style={{ 
+              display: "flex", 
+              flexDirection: window.innerWidth <= 768 ? "column" : "row",
+              gap: "20px", 
+              marginBottom: "20px",
+              alignItems: window.innerWidth <= 768 ? "center" : "flex-start"
+            }}>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "15px" }}>
                 {show.posterUrl && (
                   <img
@@ -341,24 +371,26 @@ function App() {
                   {show.title}
                 </h2>
                 
-                {/* Trending badge */}
-                {showIndex !== undefined && (
-                  <div style={{
-                    display: "inline-block",
-                    fontSize: "0.9rem",
-                    color: showIndex < 3 ? "#d69e2e" : "#667eea",
-                    fontWeight: 600,
-                    background: showIndex < 3 
-                      ? "linear-gradient(135deg, #ffd700 0%, #ffed4e 100%)"
-                      : "#f0f2ff",
-                    padding: "6px 12px",
-                    borderRadius: 12,
-                    border: showIndex < 3 ? "1px solid #ffd700" : "none",
-                    marginBottom: "15px"
-                  }}>
-                    {showIndex < 3 ? "🏆" : "📈"} #{showIndex + 1} Trending on {ALL_PLATFORMS.find(p => p.key === show.platform)?.label || show.platform}
-                  </div>
-                )}
+                {/* Trending badges for all platforms */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "15px" }}>
+                  {getAllPlatformRankings(show).map((ranking) => (
+                    <div key={ranking.platform} style={{
+                      display: "inline-block",
+                      fontSize: "0.9rem",
+                      color: ranking.rank <= 3 ? "#d69e2e" : "#667eea",
+                      fontWeight: 600,
+                      background: ranking.rank <= 3 
+                        ? "linear-gradient(135deg, #ffd700 0%, #ffed4e 100%)"
+                        : "#f0f2ff",
+                      padding: "6px 12px",
+                      borderRadius: 12,
+                      border: ranking.rank <= 3 ? "1px solid #ffd700" : "none",
+                      alignSelf: "flex-start"
+                    }}>
+                      {ranking.rank <= 3 ? "🏆" : "📈"} #{ranking.rank} Trending on {ranking.platformInfo.label}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -388,40 +420,68 @@ function App() {
             }}>
               <div style={{
                 display: "grid",
-                gridTemplateColumns: "140px 1fr",
-                gap: "12px",
+                gridTemplateColumns: window.innerWidth <= 768 ? "1fr" : "140px 1fr",
+                gap: window.innerWidth <= 768 ? "8px" : "12px",
                 fontSize: "0.95rem"
               }}>
                 {/* Starring cast */}
                 {formatStarring(show.starring) && (
-                  <>
-                    <div style={{ fontWeight: 600, color: "#495057" }}>Starring:</div>
-                    <div style={{ color: "#666" }}>{formatStarring(show.starring)}</div>
-                  </>
+                  window.innerWidth <= 768 ? (
+                    <div style={{ marginBottom: "8px" }}>
+                      <span style={{ fontWeight: 600, color: "#495057" }}>Starring: </span>
+                      <span style={{ color: "#666" }}>{formatStarring(show.starring)}</span>
+                    </div>
+                  ) : (
+                    <>
+                      <div style={{ fontWeight: 600, color: "#495057" }}>Starring:</div>
+                      <div style={{ color: "#666" }}>{formatStarring(show.starring)}</div>
+                    </>
+                  )
                 )}
 
                 {/* First aired */}
                 {show.airDate && (
-                  <>
-                    <div style={{ fontWeight: 600, color: "#495057" }}>First Aired:</div>
-                    <div style={{ color: "#666" }}>{getFirstAiredYear(show.airDate)}</div>
-                  </>
+                  window.innerWidth <= 768 ? (
+                    <div style={{ marginBottom: "8px" }}>
+                      <span style={{ fontWeight: 600, color: "#495057" }}>First Aired: </span>
+                      <span style={{ color: "#666" }}>{getFirstAiredYear(show.airDate)}</span>
+                    </div>
+                  ) : (
+                    <>
+                      <div style={{ fontWeight: 600, color: "#495057" }}>First Aired:</div>
+                      <div style={{ color: "#666" }}>{getFirstAiredYear(show.airDate)}</div>
+                    </>
+                  )
                 )}
 
                 {/* Total seasons */}
                 {show.numberOfSeasons && (
-                  <>
-                    <div style={{ fontWeight: 600, color: "#495057" }}>Total Seasons:</div>
-                    <div style={{ color: "#666" }}>{show.numberOfSeasons}</div>
-                  </>
+                  window.innerWidth <= 768 ? (
+                    <div style={{ marginBottom: "8px" }}>
+                      <span style={{ fontWeight: 600, color: "#495057" }}>Total Seasons: </span>
+                      <span style={{ color: "#666" }}>{show.numberOfSeasons}</span>
+                    </div>
+                  ) : (
+                    <>
+                      <div style={{ fontWeight: 600, color: "#495057" }}>Total Seasons:</div>
+                      <div style={{ color: "#666" }}>{show.numberOfSeasons}</div>
+                    </>
+                  )
                 )}
 
                 {/* Total episodes */}
                 {show.numberOfEpisodes && (
-                  <>
-                    <div style={{ fontWeight: 600, color: "#495057" }}>Total Episodes:</div>
-                    <div style={{ color: "#666" }}>{show.numberOfEpisodes}</div>
-                  </>
+                  window.innerWidth <= 768 ? (
+                    <div style={{ marginBottom: "8px" }}>
+                      <span style={{ fontWeight: 600, color: "#495057" }}>Total Episodes: </span>
+                      <span style={{ color: "#666" }}>{show.numberOfEpisodes}</span>
+                    </div>
+                  ) : (
+                    <>
+                      <div style={{ fontWeight: 600, color: "#495057" }}>Total Episodes:</div>
+                      <div style={{ color: "#666" }}>{show.numberOfEpisodes}</div>
+                    </>
+                  )
                 )}
               </div>
             </div>
@@ -684,7 +744,11 @@ function App() {
               ? "1fr"
               : platformFilter.length > 1 
                 ? `repeat(${platformFilter.length}, minmax(200px, 1fr))`
-                : "repeat(7, minmax(150px, 1fr))",
+                : window.innerWidth <= 768 
+                  ? "repeat(auto-fit, minmax(280px, 1fr))" // Mobile: stack more platforms per row
+                  : window.innerWidth <= 1024
+                    ? "repeat(auto-fit, minmax(200px, 1fr))" // Tablet: smaller columns
+                    : "repeat(7, minmax(150px, 1fr))", // Desktop: original layout
             maxWidth: platformFilter.length === 1 ? "600px" : "100%",
             margin: platformFilter.length === 1 ? "0 auto" : "0",
             minHeight: "400px"
