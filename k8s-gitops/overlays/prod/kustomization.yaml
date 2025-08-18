@@ -1,7 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: tv-dashboard-staging
+namespace: tv-dashboard-prod
 
 resources:
   - ../../base
@@ -10,23 +10,23 @@ resources:
   - external-secret-api.yaml
   # Note: Secrets managed by External Secrets Operator + Vault
 
-namePrefix: staging-
+namePrefix: prod-
 
 labels:
 - pairs:
-    environment: staging
-    promotion-tier: staging
+    environment: production
+    promotion-tier: production
 
 patches:
-- path: postgres-staging-patch.yaml
-- path: backend-staging-patch.yaml
-- path: ingress-staging-patch.yaml
-- path: managed-certificate-staging-patch.yaml
+- path: postgres-prod-patch.yaml
+- path: backend-prod-patch.yaml
+- path: ingress-prod-patch.yaml
+- path: managed-certificate-prod-patch.yaml
 
 images:
 - name: tv-dashboard-backend
   newName: gcr.io/tv-dashboard-k8s/tv-dashboard-backend
-  newTag: v1.4  # Promoted from dev after testing
+  newTag: v1.4  # Promoted from staging after validation
 - name: tv-dashboard-frontend
   newName: gcr.io/tv-dashboard-k8s/tv-dashboard-frontend
-  newTag: v1.2  # Promoted from dev after testing
+  newTag: v1.2  # Promoted from staging after validation

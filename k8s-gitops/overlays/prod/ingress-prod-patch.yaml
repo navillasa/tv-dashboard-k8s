@@ -1,0 +1,42 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tv-dashboard-ingress
+  annotations:
+    networking.gke.io/managed-certificates: "prod-tv-dashboard-ssl"
+spec:
+  rules:
+  - host: tv-hub.navillasa.dev
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: prod-backend-service
+            port:
+              number: 4000
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: prod-frontend-service
+            port:
+              number: 80
+  - host: prod.tv-hub.navillasa.dev
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: prod-backend-service
+            port:
+              number: 4000
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: prod-frontend-service
+            port:
+              number: 80
