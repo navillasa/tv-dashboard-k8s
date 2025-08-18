@@ -1,5 +1,5 @@
-import { fetchFromApiOne } from "./apiOne";
-import { fetchFromApiTwo } from "./apiTwo";
+const { fetchFromApiOne } = require("./apiOne");
+const { fetchFromApiTwo } = require("./apiTwo");
 
 describe("API Integrations", () => {
   const platforms = ["netflix", "hulu"];
@@ -14,6 +14,14 @@ describe("API Integrations", () => {
         expect(show).toHaveProperty("title");
         expect(show).toHaveProperty("platform");
         expect(show).toHaveProperty("airDate");
+        expect(show).toHaveProperty("popularity");
+        // New properties may not always be present, so check conditionally
+        if (show.starring) {
+          expect(Array.isArray(show.starring)).toBe(true);
+        }
+        if (show.seasons) {
+          expect(Array.isArray(show.seasons)).toBe(true);
+        }
       }
     });
   });
@@ -28,6 +36,14 @@ describe("API Integrations", () => {
         expect(show).toHaveProperty("title");
         expect(show).toHaveProperty("platform");
         expect(show).toHaveProperty("airDate");
+        expect(show).toHaveProperty("popularity");
+        // New properties may not always be present, so check conditionally
+        if (show.starring) {
+          expect(Array.isArray(show.starring)).toBe(true);
+        }
+        if (show.seasons) {
+          expect(Array.isArray(show.seasons)).toBe(true);
+        }
       }
     });
   });

@@ -1,6 +1,5 @@
 import { fetchFromApiOne } from "../clients/apiOne";
 import { fetchFromApiTwo } from "../clients/apiTwo";
-// import { getCachedShows, saveShows } from "../db/shows"; // Cache temporarily disabled
 
 const PLATFORM_KEY_ALIASES: Record<string, string> = {
   netflix: "netflix",
@@ -38,8 +37,6 @@ export interface Show {
     year?: string;        // Extracted year from airDate for display
   }>;
 }
-
-const CACHE_MAX_AGE_MINUTES = 30;
 
 export async function getUpcomingShows(platforms: string[] = []): Promise<Show[]> {
   // Normalize platform keys to canonical
@@ -112,8 +109,6 @@ export async function getUpcomingShows(platforms: string[] = []): Promise<Show[]
   const topShows = requestedPlatformKeys.flatMap(
     p => showsByPlatform[p] || []
   );
-
-  // await saveShows(topShows); // Cache temporarily disabled
 
   return topShows;
 }
