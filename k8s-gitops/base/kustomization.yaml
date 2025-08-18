@@ -14,6 +14,7 @@ resources:
   - frontend-deployment.yaml
   - frontend-service.yaml
   - ingress.yaml
+  - managed-certificate.yaml
 
 commonLabels:
   app.kubernetes.io/name: tv-dashboard

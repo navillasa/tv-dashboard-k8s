@@ -1,0 +1,7 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: tv-dashboard-ssl
+spec:
+  domains:
+    - tv-hub.navillasa.dev
