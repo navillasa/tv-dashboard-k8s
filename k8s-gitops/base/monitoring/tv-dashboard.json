@@ -1,0 +1,119 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "TV Dashboard Application",
+    "tags": ["tv-dashboard", "kubernetes"],
+    "timezone": "browser",
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Backend Health Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=\"tv-dashboard-backend\"}",
+            "legendFormat": "Backend Status"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            },
+            "mappings": [
+              {"options": {"0": {"text": "DOWN"}}, "type": "value"},
+              {"options": {"1": {"text": "UP"}}, "type": "value"}
+            ]
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Frontend Health Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=\"tv-dashboard-frontend\"}",
+            "legendFormat": "Frontend Status"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            },
+            "mappings": [
+              {"options": {"0": {"text": "DOWN"}}, "type": "value"},
+              {"options": {"1": {"text": "UP"}}, "type": "value"}
+            ]
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Pod Status",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "kube_pod_info{namespace=\"tv-dashboard-dev\"}",
+            "legendFormat": "{{pod}} - {{phase}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "Memory Usage",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "container_memory_usage_bytes{namespace=\"tv-dashboard-dev\",container!=\"POD\",container!=\"\"}",
+            "legendFormat": "{{pod}} - {{container}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bytes"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 5,
+        "title": "CPU Usage",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(container_cpu_usage_seconds_total{namespace=\"tv-dashboard-dev\",container!=\"POD\",container!=\"\"}[5m])",
+            "legendFormat": "{{pod}} - {{container}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+      }
+    ]
+  }
+}

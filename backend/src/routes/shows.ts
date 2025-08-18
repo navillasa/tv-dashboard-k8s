@@ -1,5 +1,6 @@
 import express from "express";
 import { getUpcomingShows } from "../services/showAggregator";
+import { tvShowsRequested } from "../metrics";
 
 const router = express.Router();
 
@@ -11,6 +12,15 @@ router.get("/", async (req, res) => {
         ? (req.query.platform as string[])
         : [];
     const shows = await getUpcomingShows(platforms);
+
+    // Record metrics for business intelligence
+    if (platforms.length > 0) {
+      platforms.forEach(platform => {
+        tvShowsRequested.labels(platform).inc();
+      });
+    } else {
+      tvShowsRequested.labels('all').inc();
+    }
 
     res.json(shows);
   } catch (error) {

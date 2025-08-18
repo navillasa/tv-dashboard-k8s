@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: monitoring
+  labels:
+    app: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+      - name: grafana
+        image: grafana/grafana:10.0.0
+        ports:
+        - containerPort: 3000
+          name: web
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        env:
+        - name: GF_SECURITY_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: grafana-admin
+              key: password
+        - name: GF_INSTALL_PLUGINS
+          value: "grafana-piechart-panel"
+        volumeMounts:
+        - name: grafana-data
+          mountPath: /var/lib/grafana
+        - name: grafana-config
+          mountPath: /etc/grafana/provisioning/datasources
+          subPath: datasources
+        - name: grafana-dashboards-config
+          mountPath: /etc/grafana/provisioning/dashboards
+          subPath: dashboards
+        - name: grafana-dashboards
+          mountPath: /var/lib/grafana/dashboards
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+      volumes:
+      - name: grafana-data
+        emptyDir: {}
+      - name: grafana-config
+        configMap:
+          name: grafana-datasources
+      - name: grafana-dashboards-config
+        configMap:
+          name: grafana-dashboard-config
+      - name: grafana-dashboards
+        configMap:
+          name: grafana-dashboards
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: monitoring
+  labels:
+    app: grafana
+spec:
+  selector:
+    app: grafana
+  ports:
+  - name: web
+    port: 3000
+    targetPort: 3000
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: grafana-admin
+  namespace: monitoring
+type: Opaque
+data:
+  # admin / admin123 (change this!)
+  password: YWRtaW4xMjM=
