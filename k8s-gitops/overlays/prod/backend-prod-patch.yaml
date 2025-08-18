@@ -3,18 +3,18 @@ kind: Deployment
 metadata:
   name: backend
 spec:
-  replicas: 3  # High availability for production
+  replicas: 1  # Demo environment (would be 3+ in real prod)
   template:
     spec:
       containers:
       - name: backend
         resources:
           requests:
-            memory: 512Mi
-            cpu: 500m
+            memory: 128Mi
+            cpu: 100m
           limits:
-            memory: 1Gi
-            cpu: 1000m
+            memory: 256Mi
+            cpu: 200m
         env:
         - name: NODE_ENV
           value: "production"
