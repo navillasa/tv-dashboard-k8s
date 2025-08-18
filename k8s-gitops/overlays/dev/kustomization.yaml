@@ -5,8 +5,10 @@ namespace: tv-dashboard-dev
 
 resources:
   - ../../base
-  # Note: Secrets are created manually or via External Secrets Operator  
-  # See README.md for setup instructions
+  - external-secrets-service-account.yaml
+  - external-secret-database.yaml
+  - external-secret-api.yaml
+  # Note: Secrets now managed by External Secrets Operator + Vault
 
 namePrefix: dev-
 
