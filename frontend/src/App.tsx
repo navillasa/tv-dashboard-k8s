@@ -28,21 +28,46 @@ function App() {
   const [shows, setShows] = useState<Show[]>([]); // Start empty - no mock data!
   const [imagesPreloaded, setImagesPreloaded] = useState(false);
   const [realShowData, setRealShowData] = useState<Show[]>([]);
+  const [loadingProgress, setLoadingProgress] = useState<Record<string, number>>({});
+  const [animatingTiles, setAnimatingTiles] = useState<Set<string>>(new Set());
   
-  // Add CSS animation for spinner
-  const spinnerStyle = `
+  // Add CSS animations
+  const animations = `
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
+    }
+    @keyframes tileSlideIn {
+      0% { 
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+      }
+      100% { 
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    .tile-animate {
+      animation: tileSlideIn 0.6s ease-out forwards;
     }
   `;
   
   React.useEffect(() => {
     const style = document.createElement("style");
-    style.textContent = spinnerStyle;
+    style.textContent = animations;
     document.head.appendChild(style);
     return () => document.head.removeChild(style);
   }, []);
+
+  // Helper function to get darker color for platform headers
+  const getDarkerColor = (color: string): string => {
+    // Convert hex to RGB and darken
+    const hex = color.replace('#', '');
+    const r = Math.max(0, parseInt(hex.substr(0, 2), 16) - 40);
+    const g = Math.max(0, parseInt(hex.substr(2, 2), 16) - 40);
+    const b = Math.max(0, parseInt(hex.substr(4, 2), 16) - 40);
+    return `rgb(${r}, ${g}, ${b})`;
+  };
 
   // Mapping of show titles to cached image filenames
   const cachedImageMap: Record<string, string> = {
@@ -122,10 +147,32 @@ function App() {
         // Backend now serves cached images directly - no frontend mapping needed!
         console.log(`📡 Received ${data.length} shows from API`);
         
+        // Trigger staggered tile animations
+        setLoadingProgress({});
+        setAnimatingTiles(new Set());
+        
+        // Stagger the show appearance
+        let totalShows = 0;
+        const showsByPlatform: Record<string, Show[]> = {};
+        ALL_PLATFORMS.forEach(p => {
+          showsByPlatform[p.key] = data.filter(show => show.platform === p.key);
+          totalShows += showsByPlatform[p.key].length;
+        });
+        
+        let currentDelay = 0;
+        ALL_PLATFORMS.forEach(platform => {
+          const platformShows = showsByPlatform[platform.key];
+          platformShows.forEach((show, index) => {
+            setTimeout(() => {
+              const tileId = `${platform.key}-${index}`;
+              setAnimatingTiles(prev => new Set([...prev, tileId]));
+            }, currentDelay * 100); // 100ms between each tile
+            currentDelay++;
+          });
+        });
+        
         setShows(data);
         setIsRealData(true);
-        
-        // Store for loading indicator (no longer needed but kept for state consistency)
         setRealShowData(data);
       } catch (e) {
         // If API fails, just keep loading state - no mock data fallback
@@ -862,12 +909,12 @@ function App() {
                 marginBottom: "1.5rem",
                 fontSize: "1.4rem",
                 fontWeight: 600,
-                color: "#333",
+                color: "#fff",
                 padding: "1rem",
-                background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
+                background: `linear-gradient(135deg, ${platform.color} 0%, ${getDarkerColor(platform.color)} 100%)`,
                 borderRadius: "12px",
-                border: "1px solid #dee2e6",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.05)"
+                border: "none",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
               }}>
                 {platform.label}
               </h2>
@@ -885,9 +932,14 @@ function App() {
               ) : (
                 showsByPlatform[platform.key]
                   .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
-                  .map((show, index) => (
+                  .map((show, index) => {
+                    const tileId = `${platform.key}-${index}`;
+                    const isAnimating = animatingTiles.has(tileId);
+                    
+                    return (
                   <div
                     key={show.id + show.platform}
+                    className={isAnimating ? "tile-animate" : ""}
                     style={{
                       border: "none",
                       borderRadius: 16,
@@ -897,7 +949,9 @@ function App() {
                       position: "relative",
                       boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
                       transition: "transform 0.2s ease, box-shadow 0.2s ease",
-                      cursor: "pointer"
+                      cursor: "pointer",
+                      opacity: isAnimating ? 1 : 0,
+                      transform: isAnimating ? "translateY(0) scale(1)" : "translateY(20px) scale(0.95)"
                     }}
                     onClick={() => openModal(show, index)}
                     onMouseEnter={(e) => {
@@ -909,7 +963,24 @@ function App() {
                       e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)";
                     }}
                   >
-                    {(show.posterUrl || cachedImageMap[show.title]) && (
+                    {!isAnimating ? (
+                      // Placeholder while waiting for animation
+                      <div style={{
+                        width: "100%", 
+                        height: platformFilter.length === 1 ? "250px" : "160px",
+                        background: `linear-gradient(135deg, ${getLighterColor(platform.color)} 0%, ${platform.color}20 100%)`,
+                        borderRadius: 12, 
+                        marginBottom: 12,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: platform.color,
+                        fontSize: "2rem",
+                        opacity: 0.6
+                      }}>
+                        📺
+                      </div>
+                    ) : (show.posterUrl || cachedImageMap[show.title]) && (
                       <img
                         src={getOptimizedPosterUrl(show)}
                         alt={show.title}
@@ -964,6 +1035,8 @@ function App() {
                     </div>
 
                   </div>
+                  );
+                }
                 ))
               )}
             </div>
