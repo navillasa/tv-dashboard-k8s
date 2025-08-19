@@ -86,10 +86,11 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Configure Docker for GCR
+      - name: Configure Docker for GCR and Artifact Registry
         run: |
           gcloud auth configure-docker gcr.io
-          echo "Docker configured for GCR"
+          gcloud auth configure-docker us-docker.pkg.dev
+          echo "Docker configured for GCR and Artifact Registry"
 
       - name: Build and push backend image
         run: |
