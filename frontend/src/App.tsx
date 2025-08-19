@@ -131,7 +131,6 @@ function App() {
 
   useEffect(() => {
     async function fetchShows() {
-      // SUCCESS: Poster optimization is working! Cached images load ~50ms, TMDB images ~180ms
       console.log("🎉 TV Hub loading with poster optimization enabled");
       
       setLoading(true);
@@ -143,39 +142,14 @@ function App() {
         const params = { platform: selected.join(",") };
 
         const { data } = await axios.get("/api/shows", { params });
-
-        // Backend now serves cached images directly - no frontend mapping needed!
         console.log(`📡 Received ${data.length} shows from API`);
         
-        // Trigger staggered tile animations
-        setLoadingProgress({});
-        setAnimatingTiles(new Set());
-        
-        // Stagger the show appearance
-        let totalShows = 0;
-        const showsByPlatform: Record<string, Show[]> = {};
-        ALL_PLATFORMS.forEach(p => {
-          showsByPlatform[p.key] = data.filter(show => show.platform === p.key);
-          totalShows += showsByPlatform[p.key].length;
-        });
-        
-        let currentDelay = 0;
-        ALL_PLATFORMS.forEach(platform => {
-          const platformShows = showsByPlatform[platform.key];
-          platformShows.forEach((show, index) => {
-            setTimeout(() => {
-              const tileId = `${platform.key}-${index}`;
-              setAnimatingTiles(prev => new Set([...prev, tileId]));
-            }, currentDelay * 100); // 100ms between each tile
-            currentDelay++;
-          });
-        });
-        
+        // Show tiles immediately - no waiting, no staggered delays!
         setShows(data);
         setIsRealData(true);
         setRealShowData(data);
+        setAnimatingTiles(new Set()); // Clear any previous animations
       } catch (e) {
-        // If API fails, just keep loading state - no mock data fallback
         console.error("Failed to fetch shows:", e);
       } finally {
         setLoading(false);
@@ -932,14 +906,9 @@ function App() {
               ) : (
                 showsByPlatform[platform.key]
                   .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
-                  .map((show, index) => {
-                    const tileId = `${platform.key}-${index}`;
-                    const isAnimating = animatingTiles.has(tileId);
-                    
-                    return (
+                  .map((show, index) => (
                   <div
                     key={show.id + show.platform}
-                    className={isAnimating ? "tile-animate" : ""}
                     style={{
                       border: "none",
                       borderRadius: 16,
@@ -949,9 +918,7 @@ function App() {
                       position: "relative",
                       boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
                       transition: "transform 0.2s ease, box-shadow 0.2s ease",
-                      cursor: "pointer",
-                      opacity: isAnimating ? 1 : 0,
-                      transform: isAnimating ? "translateY(0) scale(1)" : "translateY(20px) scale(0.95)"
+                      cursor: "pointer"
                     }}
                     onClick={() => openModal(show, index)}
                     onMouseEnter={(e) => {
@@ -963,45 +930,58 @@ function App() {
                       e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)";
                     }}
                   >
-                    {!isAnimating ? (
-                      // Placeholder while waiting for animation
+                    <div style={{
+                      width: "100%", 
+                      height: platformFilter.length === 1 ? "250px" : "160px",
+                      background: `linear-gradient(135deg, ${getLighterColor(platform.color)} 0%, ${platform.color}20 100%)`,
+                      borderRadius: 12, 
+                      marginBottom: 12,
+                      position: "relative",
+                      overflow: "hidden"
+                    }}>
+                      {(show.posterUrl || cachedImageMap[show.title]) ? (
+                        <img
+                          src={getOptimizedPosterUrl(show)}
+                          alt={show.title}
+                          loading="eager"
+                          style={{
+                            width: "100%", 
+                            height: "100%",
+                            objectFit: "cover",
+                            borderRadius: 12,
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            opacity: 0,
+                            transition: "opacity 0.5s ease"
+                          }}
+                          onLoad={(e) => {
+                            e.currentTarget.style.opacity = "1";
+                          }}
+                          onError={(e) => {
+                            // If image fails to load, show the placeholder content
+                            e.currentTarget.style.display = "none";
+                          }}
+                        />
+                      ) : null}
+                      {/* Always show platform-colored background with icon */}
                       <div style={{
-                        width: "100%", 
-                        height: platformFilter.length === 1 ? "250px" : "160px",
-                        background: `linear-gradient(135deg, ${getLighterColor(platform.color)} 0%, ${platform.color}20 100%)`,
-                        borderRadius: 12, 
-                        marginBottom: 12,
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                         color: platform.color,
                         fontSize: "2rem",
-                        opacity: 0.6
+                        opacity: 0.7,
+                        zIndex: 1
                       }}>
                         📺
                       </div>
-                    ) : (show.posterUrl || cachedImageMap[show.title]) && (
-                      <img
-                        src={getOptimizedPosterUrl(show)}
-                        alt={show.title}
-                        loading="eager"
-                        style={{
-                          width: "100%", 
-                          height: platformFilter.length === 1 ? "250px" : "160px",
-                          objectFit: "cover",
-                          borderRadius: 12, 
-                          marginBottom: 12,
-                          opacity: 1,
-                          transition: "opacity 0.3s ease"
-                        }}
-                        onLoad={(e) => {
-                          e.currentTarget.style.opacity = "1";
-                        }}
-                        onLoadStart={(e) => {
-                          e.currentTarget.style.opacity = "0.7";
-                        }}
-                      />
-                    )}
+                    </div>
                     <div style={{ 
                       fontWeight: 600, 
                       fontSize: platformFilter.length === 1 ? "1.2rem" : "0.95rem",
@@ -1035,8 +1015,7 @@ function App() {
                     </div>
 
                   </div>
-                  );
-                })
+                ))
               )}
             </div>
           ))}
