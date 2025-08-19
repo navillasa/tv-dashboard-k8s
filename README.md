@@ -6,7 +6,7 @@
 [![Infrastructure as Code](https://img.shields.io/badge/IaC-Terraform-7B42BC)](./infra/)
 [![Container Security](https://img.shields.io/badge/Security-Multi--stage%20Builds-green)](./backend/Dockerfile)
 
-![TV Hub Dashboard](docs/images/tv-hub-screenshot.png)
+![TV Hub Dashboard](docs/images/tv-hub-screenshot2.png)
 *Live dashboard showing popular shows across Netflix, Disney+, Prime Video, and more streaming platforms*
 
 A comprehensive TV show aggregation platform built to demonstrate enterprise-level DevOps engineering practices. While the application itself is intentionally simple (displaying trending TV shows from multiple platforms), the infrastructure and deployment pipeline showcase advanced concepts including GitOps, observability, security, and cloud-native architecture patterns.
