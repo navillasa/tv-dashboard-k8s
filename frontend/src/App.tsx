@@ -410,12 +410,21 @@ function App() {
                   <img
                     src={getOptimizedPosterUrl(show)}
                     alt={show.title}
+                    loading="eager"
                     style={{
                       width: "150px",
                       height: "225px",
                       objectFit: "cover",
                       borderRadius: 12,
-                      flexShrink: 0
+                      flexShrink: 0,
+                      opacity: 1,
+                      transition: "opacity 0.3s ease"
+                    }}
+                    onLoad={(e) => {
+                      e.currentTarget.style.opacity = "1";
+                    }}
+                    onLoadStart={(e) => {
+                      e.currentTarget.style.opacity = "0.7";
                     }}
                   />
                 )}
@@ -917,12 +926,21 @@ function App() {
                       <img
                         src={getOptimizedPosterUrl(show)}
                         alt={show.title}
+                        loading="eager"
                         style={{
                           width: "100%", 
                           height: platformFilter.length === 1 ? "250px" : "160px",
                           objectFit: "cover",
                           borderRadius: 12, 
-                          marginBottom: 12
+                          marginBottom: 12,
+                          opacity: 1,
+                          transition: "opacity 0.3s ease"
+                        }}
+                        onLoad={(e) => {
+                          e.currentTarget.style.opacity = "1";
+                        }}
+                        onLoadStart={(e) => {
+                          e.currentTarget.style.opacity = "0.7";
                         }}
                       />
                     )}
