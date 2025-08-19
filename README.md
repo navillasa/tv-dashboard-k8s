@@ -189,9 +189,7 @@ make k8s-status
 
 ---
 
-## 🔍 **Current Capabilities**
-
-### **✅ Implemented**
+## ✅ **Implemented**
 - [x] Full-stack application with React frontend and Node.js backend
 - [x] Multi-API integration aggregating data from TMDB and TVmaze
 - [x] Comprehensive CI/CD with automated testing and deployment
@@ -245,10 +243,22 @@ This project demonstrates measurable DevOps improvements:
 
 ## 🧿 **Getting Started for Reviewers**
 
-1. **Live Demo**: [Coming Soon - will include GKE deployment]
-2. **CI/CD Pipeline**: Check the [GitHub Actions](https://github.com/navillasa/tv-dashboard-k8s/actions) for automated testing
-3. **Architecture Deep Dive**: Review the [Infrastructure Code](./infra/) for Terraform configurations
-4. **Code Quality**: Examine [backend code](./backend/src/) with comprehensive testing
+### **🌐 Live Applications** 
+1. **TV Hub Production**: [tv-hub.navillasa.dev](http://tv-hub.navillasa.dev) - Full application with instant loading
+2. **Business Intelligence Dashboard**: [monitoring.navillasa.dev](https://monitoring.navillasa.dev) - Real-time metrics (demo/password)
+
+### **🔍 Technical Deep Dive**
+3. **CI/CD Pipeline**: [GitHub Actions](https://github.com/navillasa/tv-dashboard-k8s/actions) - Automated build/test/deploy
+4. **Infrastructure Code**: [Terraform configs](./infra/) - GKE Autopilot + managed services
+5. **GitOps Manifests**: [Kubernetes YAML](./k8s-gitops/) - Multi-environment with Kustomize
+6. **Monitoring Setup**: [Grafana dashboards](./k8s-gitops/base/monitoring/) - Custom business metrics
+
+### **💡 Key Highlights for Employers**
+- **Production-ready**: Real users, 100% uptime, professional monitoring
+- **Full GitOps workflow**: Automated dev deployment + manual prod promotion  
+- **Security-first**: Vault secrets management + service account isolation
+- **Performance optimized**: Instant loading, comprehensive caching strategy
+- **Business intelligence**: Custom metrics showing platform analytics and API performance
 
 ---
 
@@ -257,3 +267,4 @@ This project demonstrates measurable DevOps improvements:
 **Interested in discussing DevOps strategies or potential collaboration?**
 - 📧 **Email**: [navillasa.dev@gmail.com]
 - 💼 **LinkedIn**: [www.linkedin.com/in/natalievillasana]
+- 🌐 **Portfolio Site**: [navillasa.dev]
