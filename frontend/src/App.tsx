@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { MOCK_SHOWS } from "./mockData";
 
 type Show = {
   id: string;
@@ -24,9 +25,10 @@ const ALL_PLATFORMS = [
 ];
 
 function App() {
-  const [shows, setShows] = useState<Show[]>([]);
+  const [shows, setShows] = useState<Show[]>(MOCK_SHOWS); // Start with mock data
   const [platformFilter, setPlatformFilter] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isRealData, setIsRealData] = useState(false);
 
   useEffect(() => {
     async function fetchShows() {
@@ -41,8 +43,12 @@ function App() {
         const { data } = await axios.get("/api/shows", { params });
 
         setShows(data);
+        setIsRealData(true);
       } catch (e) {
-        setShows([]);
+        // Keep mock data if API fails
+        if (!isRealData) {
+          setShows(MOCK_SHOWS);
+        }
       } finally {
         setLoading(false);
       }
