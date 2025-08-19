@@ -15,30 +15,21 @@ A comprehensive TV show aggregation platform built to demonstrate enterprise-lev
 
 ## 🌟 **Key Features**
 
-### 👾 **Production-Ready Deployment**
-- **Live Application**: [tv-hub.navillasa.dev](http://tv-hub.navillasa.dev)
+### ⛴️  **Production-Ready Deployment**
+- **Production Deployment**: Live at [tv-hub.navillasa.dev](http://tv-hub.navillasa.dev)
 - **GKE Autopilot**: Cost-effective Kubernetes with auto-scaling
 - **Custom Domain + SSL**: Automatic certificate management
 - **GitOps with ArgoCD**: Continuous deployment from Git
 
 ### 🔧 **DevOps Infrastructure** 
-- **Infrastructure as Code**: Terraform for GCP resources
-- **Multi-Environment Setup**: Dev/staging/prod with Kustomize overlays  
-- **CI/CD Pipeline**: GitHub Actions with testing and security
+- **Infrastructure as Code**: Full Terraform deployment on GKE Autopilot
+- **Multi-Environment GitOps**: Automated dev deployment, manual prod promotion via ArgoCD
+- **Complete CI/CD Pipeline**: GitHub Actions builds, tests, and deploys with semantic versioning
 - **Container Registry**: Google Container Registry integration
 - **Secrets Management**: HashiCorp Vault with External Secrets Operator
 - **GitOps Deployment**: ArgoCD with automated sync and rollback
-- **Observability**: Prometheus + Grafana monitoring stack
-
-### 🎯 **Current Capabilities**
-- ✅ **Production Deployment**: Live at [tv-hub.navillasa.dev](http://tv-hub.navillasa.dev)
-- ✅ **Multi-Environment GitOps**: Automated dev deployment, manual prod promotion via ArgoCD
-- ✅ **Complete CI/CD Pipeline**: GitHub Actions builds, tests, and deploys with semantic versioning
-- ✅ **Advanced Monitoring**: Business intelligence dashboard with streaming analytics
-- ✅ **Instant Loading UX**: Mock data eliminates loading states, real data fetches in background
-- ✅ **Production Security**: HashiCorp Vault + External Secrets for sensitive data management
-- ✅ **Infrastructure as Code**: Full Terraform deployment on GKE Autopilot
-- ✅ **Comprehensive Observability**: Prometheus metrics + Grafana dashboards with custom business KPIs
+- **Observability**: Prometheus metrics + Grafana dashboards with custom business KPIs
+- **Production Security**: HashiCorp Vault + External Secrets for sensitive data management
 
 ---
 
@@ -52,11 +43,10 @@ A comprehensive TV show aggregation platform built to demonstrate enterprise-lev
 
 ### 📊 **Live Business Intelligence Dashboard**
 - **URL**: [TV Hub Business Intelligence Dashboard](https://monitoring.navillasa.dev/d/e0c978bd-6077-403e-ab3b-ba03f4b34962/tv-hub-business-intelligence-dashboard)
-- **Access**: Basic auth (`demo` / `password`)
 - **Features**: Comprehensive business analytics and production monitoring
-- **Analytics**: Platform popularity rankings, real-time user activity, API performance metrics
+- **Analytics**: Platform-specific popularity rankings, real-time user activity, API performance metrics
 - **Security**: Attack detection, system resource monitoring, response time analysis
-- **Business Insights**: Netflix leads with 37 requests, 4,284+ total API calls, 100% API success rate
+- **Business Insights**: E.g. "Netflix leads with 37 requests, 4,284+ total API calls, 100% API success rate"
 
 ![Business Intelligence Dashboard](./docs/images/dashboard-screenshot.png)
 *Interactive dashboard showing streaming platform analytics and production metrics*
@@ -103,17 +93,6 @@ A comprehensive TV show aggregation platform built to demonstrate enterprise-lev
 | **Secrets** | HashiCorp Vault + External Secrets | Secure secrets management |
 | **GitOps** | ArgoCD | Declarative deployments and promotion |
 | **DNS/SSL** | Cloud DNS + Managed Certificates | Automatic HTTPS and domain management |
-
----
-
-### **Application Features**
-- **Multi-platform TV show aggregation** from TMDB and TVmaze APIs
-- **Instant loading** with placeholder data while real data fetches
-- **Trending rankings** with platform-specific popularity scores  
-- **Responsive UI** with platform-branded color schemes
-- **Detailed show modals** with cast, seasons, and watch links
-- **Intelligent caching** and API rate limiting strategies
-- **Real-time updates** with graceful error handling
 
 ---
 
@@ -256,7 +235,7 @@ This project demonstrates measurable DevOps improvements:
 5. **GitOps Manifests**: [Kubernetes YAML](./k8s-gitops/) - Multi-environment with Kustomize
 6. **Monitoring Setup**: [Grafana dashboards](./k8s-gitops/base/monitoring/) - Custom business metrics
 
-### **💡 Key Highlights for Employers**
+### **💡 Key Highlights**
 - **Production-ready**: Real users, 100% uptime, professional monitoring
 - **Full GitOps workflow**: Automated dev deployment + manual prod promotion  
 - **Security-first**: Vault secrets management + service account isolation
