@@ -64,8 +64,9 @@ function App() {
 
   // Function to use cached image if available, otherwise fallback to API image
   const getOptimizedPosterUrl = (show: Show): string => {
-    // Use cached image if available, otherwise use the posterUrl from the show
-    return cachedImageMap[show.title] || show.posterUrl || "";
+    // Since we already map posterUrl in the data fetch, just return it
+    // But add fallback to cache in case data mapping failed
+    return show.posterUrl || cachedImageMap[show.title] || "";
   };
 
   // Function to preload all images from real data with timeout
@@ -117,10 +118,22 @@ function App() {
         const { data } = await axios.get("/api/shows", { params });
 
         // Immediately use real data but with cached images where available
-        const optimizedData = data.map(show => ({
-          ...show,
-          posterUrl: cachedImageMap[show.title] || show.posterUrl
-        }));
+        const optimizedData = data.map(show => {
+          const cachedUrl = cachedImageMap[show.title];
+          const finalUrl = cachedUrl || show.posterUrl;
+          
+          // Debug logging
+          if (cachedUrl) {
+            console.log(`✅ Using cached image for "${show.title}": ${cachedUrl}`);
+          } else {
+            console.log(`❌ No cached image for "${show.title}", using API URL: ${show.posterUrl}`);
+          }
+          
+          return {
+            ...show,
+            posterUrl: finalUrl
+          };
+        });
         
         setShows(optimizedData);
         setIsRealData(true);
