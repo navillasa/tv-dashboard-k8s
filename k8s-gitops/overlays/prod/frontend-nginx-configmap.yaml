@@ -20,6 +20,23 @@ data:
             proxy_set_header X-Forwarded-Proto $scheme;
         }
         
+        # Cache static assets (images, CSS, JS)
+        location ~* \.(jpg|jpeg|png|gif|webp|svg|css|js|ico)$ {
+            root /usr/share/nginx/html;
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+            add_header X-Cache-Status "HIT-STATIC";
+        }
+
+        # Special caching for poster images
+        location /images/posters/ {
+            root /usr/share/nginx/html;
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+            add_header X-Cache-Status "HIT-POSTER";
+            try_files $uri =404;
+        }
+
         location / {
             root /usr/share/nginx/html;
             index index.html index.htm;
