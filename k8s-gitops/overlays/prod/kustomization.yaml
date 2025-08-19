@@ -28,7 +28,7 @@ patches:
 images:
 - name: tv-dashboard-backend
   newName: gcr.io/tv-dashboard-k8s/tv-dashboard-backend
-  newTag: v1.4  # Promoted from staging after validation
+  newTag: v20250819-8fe2268  # Latest with fast loading and optimizations
 - name: tv-dashboard-frontend
   newName: gcr.io/tv-dashboard-k8s/tv-dashboard-frontend
-  newTag: v1.2  # Promoted from staging after validation
+  newTag: v20250819-8fe2268  # Latest with instant tiles and progressive loading
