@@ -5,7 +5,7 @@ metadata:
   namespace: argocd
   annotations:
     kubernetes.io/ingress.class: "gce"
-    kubernetes.io/ingress.global-static-ip-name: "argocd-ip"
+    # kubernetes.io/ingress.global-static-ip-name: "argocd-ip"  # Removed - using dynamic IP
     networking.gke.io/managed-certificates: "argocd-ssl"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
