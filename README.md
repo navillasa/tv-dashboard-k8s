@@ -62,6 +62,7 @@ A comprehensive TV show aggregation platform built to demonstrate enterprise-lev
 
 ## 🏗️ **Architecture Overview**
 
+### 🎯 **Application Architecture**
 ```
 ┌──────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   React Frontend │    │ Node.js Backend │    │   PostgreSQL    │
@@ -76,6 +77,123 @@ A comprehensive TV show aggregation platform built to demonstrate enterprise-lev
                      │  • TMDB         │
                      │  • TVmaze       │ 
                      └─────────────────┘
+```
+
+### ☸️ **Infrastructure Architecture**
+```mermaid
+graph TB
+    subgraph "🌐 External Access"
+        Users[👥 Users]
+        DNS[🌍 Cloud DNS<br/>navillasa.dev]
+    end
+    
+    subgraph "🔒 Security Layer"
+        Ingress[⚡ GKE Ingress<br/>Load Balancer]
+        Certs[🔐 Managed SSL<br/>Certificates]
+    end
+    
+    subgraph "☸️ GKE Autopilot Cluster"
+        subgraph "📦 tv-dashboard-dev"
+            DevFE[🎨 Frontend<br/>React/Nginx]
+            DevBE[⚙️ Backend<br/>Node.js API]
+            DevDB[🗄️ PostgreSQL<br/>Database]
+        end
+        
+        subgraph "📦 tv-dashboard-prod"
+            ProdFE[🎨 Frontend<br/>React/Nginx]
+            ProdBE[⚙️ Backend<br/>Node.js API]
+            ProdDB[🗄️ PostgreSQL<br/>Database]
+        end
+        
+        subgraph "📊 monitoring"
+            Grafana[📈 Grafana<br/>Dashboards]
+            Prometheus[📊 Prometheus<br/>Metrics]
+        end
+        
+        subgraph "🔐 vault-system"
+            Vault[🏦 HashiCorp Vault<br/>Secrets Engine]
+            ESO[🔑 External Secrets<br/>Operator]
+        end
+        
+        subgraph "🚀 argocd"
+            ArgoCD[🔄 ArgoCD<br/>GitOps]
+            ArgoDash[🎛️ ArgoCD UI]
+        end
+    end
+    
+    subgraph "📱 GitOps Repository"
+        GitRepo[📝 GitHub Repo<br/>k8s-gitops/]
+        Manifests[📋 K8s Manifests<br/>base/ + overlays/]
+    end
+    
+    subgraph "🏗️ CI/CD Pipeline"
+        Actions[⚙️ GitHub Actions<br/>Build & Test]
+        GCR[📦 Google Container<br/>Registry]
+    end
+    
+    subgraph "🌍 External APIs"
+        TMDB[🎬 TMDB API<br/>Movie Database]
+        TVMaze[📺 TVMaze API<br/>TV Shows]
+    end
+    
+    %% User Flow
+    Users --> DNS
+    DNS --> Ingress
+    Ingress --> Certs
+    
+    %% Application Flow
+    Ingress --> DevFE
+    Ingress --> ProdFE
+    Ingress --> Grafana
+    Ingress --> ArgoDash
+    
+    DevFE --> DevBE
+    DevBE --> DevDB
+    ProdFE --> ProdBE
+    ProdBE --> ProdDB
+    
+    %% External API Integration
+    DevBE --> TMDB
+    DevBE --> TVMaze
+    ProdBE --> TMDB
+    ProdBE --> TVMaze
+    
+    %% Monitoring
+    Prometheus --> DevBE
+    Prometheus --> ProdBE
+    Prometheus --> DevDB
+    Prometheus --> ProdDB
+    Grafana --> Prometheus
+    
+    %% Secrets Management
+    Vault --> ESO
+    ESO --> DevDB
+    ESO --> ProdDB
+    ESO --> DevBE
+    ESO --> ProdBE
+    
+    %% GitOps Flow
+    GitRepo --> ArgoCD
+    Manifests --> ArgoCD
+    ArgoCD --> DevFE
+    ArgoCD --> DevBE
+    ArgoCD --> DevDB
+    ArgoCD --> ProdFE
+    ArgoCD --> ProdBE
+    ArgoCD --> ProdDB
+    ArgoCD --> Vault
+    ArgoCD --> Grafana
+    ArgoCD --> Prometheus
+    
+    %% CI/CD Flow
+    Actions --> GCR
+    GCR --> GitRepo
+    
+    style Users fill:#e1f5fe
+    style Vault fill:#fff3e0
+    style ArgoCD fill:#f3e5f5
+    style Grafana fill:#e8f5e8
+    style Prometheus fill:#e8f5e8
 ```
 
 ### **Technology Stack**
@@ -101,84 +219,89 @@ A comprehensive TV show aggregation platform built to demonstrate enterprise-lev
 ```
 tv-dashboard-k8s/
 ├── 🎨 frontend/              # React + TypeScript SPA
-│   ├── src/App.tsx          # Main application component
-│   ├── Dockerfile           # Multi-stage build
-│   └── healthcheck.sh       # Health monitoring
-├── ⚙️  backend/              # Node.js + Express API
+│   ├── src/App.tsx          # Main app with instant loading
+│   ├── public/images/       # Optimized poster cache
+│   ├── Dockerfile           # Multi-stage production build
+│   └── nginx.conf           # Optimized serving config
+├── ⚙️  backend/              # Node.js + Express API  
 │   ├── src/
-│   │   ├── clients/         # External API integrations
+│   │   ├── clients/         # TMDB & TVMaze integrations
 │   │   ├── services/        # Business logic & aggregation
 │   │   ├── routes/          # REST API endpoints
+│   │   ├── metrics.ts       # Prometheus metrics
 │   │   └── db/              # Database operations
-│   ├── Dockerfile           # Optimized backend image
-│   └── jest.config.js       # Testing configuration
-├── 🗄️  db/                   # PostgreSQL setup
-│   └── init.sql             # Database schema
-├── 🏗️  infra/                # Terraform Infrastructure
-│   ├── main.tf              # GKE cluster configuration
-│   ├── variables.tf         # Configurable parameters
-│   └── outputs.tf           # Infrastructure outputs
-├── ☸️  k8s/                   # Kubernetes manifests
-│   ├── backend-deployment.yaml
-│   ├── frontend-deployment.yaml
-│   ├── postgres-deployment.yaml
-│   └── ingress.yaml
-├── 🔧 .github/workflows/     # CI/CD pipeline
-│   └── ci.yml               # Automated testing & deployment
-├── 🐳 docker-compose.yml     # Local development
-├── 📋 Makefile              # Automation scripts
-└── 📊 monitoring/           # [Coming Soon] Observability stack
+│   └── Dockerfile           # Optimized backend image
+├── 🏗️  infra/                # Terraform Infrastructure as Code
+│   ├── main.tf              # GKE Autopilot cluster
+│   ├── variables.tf         # Environment configuration
+│   └── kubeconfig.yaml      # Cluster access
+├── ☸️  k8s-gitops/           # GitOps Kubernetes manifests
+│   ├── base/                # Base configurations
+│   │   ├── monitoring/      # Prometheus + Grafana stack
+│   │   └── vault/           # HashiCorp Vault setup
+│   ├── overlays/
+│   │   ├── dev/             # Development environment
+│   │   └── prod/            # Production environment
+│   └── argocd/              # ArgoCD applications
+├── 📊 monitoring/            # Dashboard configurations
+│   └── tv-dashboard-grafana.json
+├── 🔧 scripts/               # Automation scripts
+│   ├── promote-to-prod.sh   # Production deployment
+│   └── vault-auto-unseal.sh # Vault management
+├── 🔄 .github/workflows/     # CI/CD pipeline
+│   └── ci.yml               # Build, test, deploy automation
+└── 🐳 docker-compose.yml     # Local development stack
 ```
 
 ---
 
 ## 🛠️ **Quick Start**
 
-### **Prerequisites**
-- Docker & Docker Compose
-- Node.js 18+
-- kubectl
-- Terraform (for infrastructure)
-- gcloud CLI (for GCP deployment)
+### **🌐 View Live Deployment**
+- **Production**: [tv-hub.navillasa.dev](https://tv-hub.navillasa.dev) 
+- **Monitoring**: [monitoring.navillasa.dev](https://monitoring.navillasa.dev)
+- **ArgoCD**: [argocd.navillasa.dev](https://argocd.navillasa.dev)
 
-### **Local Development**
+### **💻 Local Development**
 ```bash
-# 1. Clone the repository
-git clone https://github.com/your-username/tv-dashboard-k8s.git
+# 1. Clone & Start
+git clone https://github.com/navillasa/tv-dashboard-k8s.git
 cd tv-dashboard-k8s
-
-# 2. Start local environment
 docker compose up -d
 
-# 3. Visit the application
-open http://localhost:3000
+# 2. Access locally
+open http://localhost:3000    # Frontend
+open http://localhost:4000    # Backend API
 ```
 
-### **Kubernetes Deployment**
+### **☸️ Deploy to GKE**
 ```bash
-# 1. Set up infrastructure
-make infra-apply PROJECT_ID=your-gcp-project
+# 1. Infrastructure (one-time setup)
+cd infra && terraform apply
 
-# 2. Build and push images
-make docker-build docker-push PROJECT_ID=your-gcp-project
+# 2. GitOps deployment via ArgoCD
+# Pushes to 'main' branch auto-deploy to dev
+# Production requires manual promotion:
+./scripts/promote-to-prod.sh v20250819-abc123
 
-# 3. Deploy to Kubernetes
-make k8s-deploy
-
-# 4. Check status
-make k8s-status
+# 3. Monitor deployment
+kubectl get applications -n argocd
 ```
+
+### **🔧 Prerequisites**
+- Docker & Docker Compose (local dev)
+- kubectl + gcloud CLI (deployment)
+- GCP project with billing enabled
 
 ---
 
-## ✅ **Implemented**
-- [x] Full-stack application with React frontend and Node.js backend
-- [x] Multi-API integration aggregating data from TMDB and TVmaze
-- [x] Comprehensive CI/CD with automated testing and deployment
-- [x] Infrastructure as Code with Terraform on GCP
-- [x] Container orchestration with Kubernetes manifests
-- [x] Security best practices with secrets management and environment isolation
-- [x] Advanced data aggregation with deduplication and platform ranking
+## ✅ **Production Features**
+- [x] **Multi-platform aggregation**: TMDB + TVMaze APIs with intelligent deduplication
+- [x] **GitOps deployment**: ArgoCD with dev auto-sync + manual prod promotion  
+- [x] **Observability stack**: Prometheus metrics + custom Grafana dashboards
+- [x] **Security**: HashiCorp Vault + External Secrets Operator
+- [x] **Performance**: Instant loading, cached images, progressive enhancement
+- [x] **Infrastructure**: Terraform on GKE Autopilot with managed SSL/DNS
 
 ### **✅ Recently Completed**
 
@@ -235,18 +358,10 @@ This project demonstrates measurable DevOps improvements:
 5. **GitOps Manifests**: [Kubernetes YAML](./k8s-gitops/) - Multi-environment with Kustomize
 6. **Monitoring Setup**: [Grafana dashboards](./k8s-gitops/base/monitoring/) - Custom business metrics
 
-### **💡 Key Highlights**
-- **Production-ready**: Real users, 100% uptime, professional monitoring
-- **Full GitOps workflow**: Automated dev deployment + manual prod promotion  
-- **Security-first**: Vault secrets management + service account isolation
-- **Performance optimized**: Instant loading, comprehensive caching strategy
-- **Business intelligence**: Custom metrics showing platform analytics and API performance
-
 ---
 
-## 📞 **Contact & Collab**
+## 📞 **Contact**
 
-**Interested in discussing DevOps strategies or potential collaboration?**
-- 📧 **Email**: [navillasa.dev@gmail.com]
-- 💼 **LinkedIn**: [www.linkedin.com/in/natalievillasana]
-- 🌐 **Portfolio Site**: [https://navillasa.dev]
+- 📧 **Email**: navillasa.dev@gmail.com
+- 💼 **LinkedIn**: [linkedin.com/in/natalievillasana](https://www.linkedin.com/in/natalievillasana)
+- 🌐 **Portfolio**: [navillasa.github.io](https://navillasa.github.io)
