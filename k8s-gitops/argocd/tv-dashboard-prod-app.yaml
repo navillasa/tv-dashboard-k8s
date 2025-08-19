@@ -15,9 +15,10 @@ spec:
     server: https://kubernetes.default.svc
     namespace: tv-dashboard-prod
   syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+    # Disable auto-sync for production - requires manual promotion
+    # automated:
+    #   prune: true
+    #   selfHeal: true
     syncOptions:
       - CreateNamespace=true
   # Ignore GKE Autopilot-managed resource adjustments

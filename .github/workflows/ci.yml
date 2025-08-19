@@ -102,15 +102,9 @@ jobs:
 
       - name: Update dev deployment image tags
         run: |
-          # Update dev environment with new image tags
+          # Only update dev environment - prod requires manual promotion
           sed -i "s|gcr.io/tv-dashboard-k8s/tv-dashboard-backend:.*|gcr.io/tv-dashboard-k8s/tv-dashboard-backend:${{ steps.version.outputs.VERSION }}|g" k8s-gitops/overlays/dev/backend-dev-patch.yaml
           sed -i "s|gcr.io/tv-dashboard-k8s/tv-dashboard-frontend:.*|gcr.io/tv-dashboard-k8s/tv-dashboard-frontend:${{ steps.version.outputs.VERSION }}|g" k8s-gitops/base/frontend-deployment.yaml
-
-      - name: Update prod deployment image tags  
-        run: |
-          # Update prod environment with new image tags
-          sed -i "s|gcr.io/tv-dashboard-k8s/tv-dashboard-backend:.*|gcr.io/tv-dashboard-k8s/tv-dashboard-backend:${{ steps.version.outputs.VERSION }}|g" k8s-gitops/overlays/prod/backend-prod-patch.yaml
-          sed -i "s|gcr.io/tv-dashboard-k8s/tv-dashboard-frontend:.*|gcr.io/tv-dashboard-k8s/tv-dashboard-frontend:${{ steps.version.outputs.VERSION }}|g" k8s-gitops/overlays/prod/frontend-prod-patch.yaml
 
       - name: Commit and push updated manifests
         run: |
