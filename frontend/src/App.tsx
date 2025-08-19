@@ -64,9 +64,14 @@ function App() {
 
   // Function to use cached image if available, otherwise fallback to API image
   const getOptimizedPosterUrl = (show: Show): string => {
-    // Since we already map posterUrl in the data fetch, just return it
-    // But add fallback to cache in case data mapping failed
-    return show.posterUrl || cachedImageMap[show.title] || "";
+    // DEBUG: Log every image request
+    console.log(`🖼️ getOptimizedPosterUrl called for "${show.title}" with posterUrl: ${show.posterUrl}`);
+    
+    // The posterUrl should already be optimized from the data mapping
+    // But double-check cache as fallback
+    const result = show.posterUrl || cachedImageMap[show.title] || "";
+    console.log(`🖼️ Final URL for "${show.title}": ${result}`);
+    return result;
   };
 
   // Function to preload all images from real data with timeout
@@ -117,22 +122,28 @@ function App() {
 
         const { data } = await axios.get("/api/shows", { params });
 
-        // Immediately use real data but with cached images where available
+        // FORCE cached images for known shows - AGGRESSIVE OPTIMIZATION
         const optimizedData = data.map(show => {
           const cachedUrl = cachedImageMap[show.title];
-          const finalUrl = cachedUrl || show.posterUrl;
           
-          // Debug logging
+          // DEBUG: Always log what's happening
+          console.log(`🔍 Processing "${show.title}"`);
+          console.log(`🔍 Has cached image: ${!!cachedUrl}`);
+          console.log(`🔍 Original posterUrl: ${show.posterUrl}`);
+          
           if (cachedUrl) {
-            console.log(`✅ Using cached image for "${show.title}": ${cachedUrl}`);
+            console.log(`✅ FORCING cached image for "${show.title}": ${cachedUrl}`);
+            return {
+              ...show,
+              posterUrl: cachedUrl  // FORCE cached URL
+            };
           } else {
-            console.log(`❌ No cached image for "${show.title}", using API URL: ${show.posterUrl}`);
+            console.log(`❌ No cached image for "${show.title}", keeping API URL: ${show.posterUrl}`);
+            return {
+              ...show,
+              posterUrl: show.posterUrl
+            };
           }
-          
-          return {
-            ...show,
-            posterUrl: finalUrl
-          };
         });
         
         setShows(optimizedData);
