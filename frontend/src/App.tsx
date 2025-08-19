@@ -64,8 +64,8 @@ function App() {
 
   // Function to use cached image if available, otherwise fallback to API image
   const getOptimizedPosterUrl = (show: Show): string => {
-    // This is now redundant since we optimize in the data mapping, but kept for safety
-    return show.posterUrl || "";
+    // Use cached image if available, otherwise use the posterUrl from the show
+    return cachedImageMap[show.title] || show.posterUrl || "";
   };
 
   // Function to preload all images from real data with timeout
