@@ -25,7 +25,22 @@ const ALL_PLATFORMS = [
 ];
 
 function App() {
-  const [shows, setShows] = useState<Show[]>(MOCK_SHOWS); // Start with mock data
+  const [shows, setShows] = useState<Show[]>(MOCK_SHOWS.slice(0, 14)); // Start with first 14 mock shows
+  
+  // Add CSS animation for spinner
+  const spinnerStyle = `
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  `;
+  
+  React.useEffect(() => {
+    const style = document.createElement("style");
+    style.textContent = spinnerStyle;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
   const [platformFilter, setPlatformFilter] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [isRealData, setIsRealData] = useState(false);
@@ -47,7 +62,7 @@ function App() {
       } catch (e) {
         // Keep mock data if API fails
         if (!isRealData) {
-          setShows(MOCK_SHOWS);
+          setShows(MOCK_SHOWS.slice(0, 14));
         }
       } finally {
         setLoading(false);
@@ -869,6 +884,33 @@ function App() {
               )}
             </div>
           ))}
+        </div>
+      )}
+      
+      {/* Loading indicator when showing mock data */}
+      {!isRealData && !loading && (
+        <div style={{ 
+          textAlign: "center", 
+          padding: "3rem 2rem",
+          color: "#666",
+          fontSize: "1.1rem",
+          background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
+          borderRadius: "16px",
+          margin: "2rem 0",
+          border: "1px solid #dee2e6",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
+        }}>
+          <div style={{ 
+            marginBottom: "1rem", 
+            fontSize: "2rem",
+            animation: "spin 2s linear infinite"
+          }}>🔄</div>
+          <div style={{ marginBottom: "0.5rem", fontWeight: 600 }}>
+            Loading more shows...
+          </div>
+          <div style={{ fontSize: "0.9rem", color: "#888" }}>
+            Fetching real-time data from streaming platforms
+          </div>
         </div>
       )}
       

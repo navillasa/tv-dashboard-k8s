@@ -267,4 +267,4 @@ This project demonstrates measurable DevOps improvements:
 **Interested in discussing DevOps strategies or potential collaboration?**
 - 📧 **Email**: [navillasa.dev@gmail.com]
 - 💼 **LinkedIn**: [www.linkedin.com/in/natalievillasana]
-- 🌐 **Portfolio Site**: [navillasa.dev]
+- 🌐 **Portfolio Site**: [www.navillasa.dev]
