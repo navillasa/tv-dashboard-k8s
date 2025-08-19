@@ -26,6 +26,8 @@ const ALL_PLATFORMS = [
 
 function App() {
   const [shows, setShows] = useState<Show[]>(MOCK_SHOWS.slice(0, 14)); // Start with first 14 mock shows
+  const [imagesPreloaded, setImagesPreloaded] = useState(false);
+  const [realShowData, setRealShowData] = useState<Show[]>([]);
   
   // Add CSS animation for spinner
   const spinnerStyle = `
@@ -41,6 +43,55 @@ function App() {
     document.head.appendChild(style);
     return () => document.head.removeChild(style);
   }, []);
+
+  // Mapping of show titles to cached image filenames
+  const cachedImageMap: Record<string, string> = {
+    "Wednesday": "/images/posters/wednesday.jpg",
+    "Breaking Bad": "/images/posters/breaking-bad.jpg", 
+    "Squid Game": "/images/posters/squid-game.jpg",
+    "The Simpsons": "/images/posters/the-simpsons.jpg",
+    "The Summer I Turned Pretty": "/images/posters/summer-turned-pretty.jpg",
+    "The Rookie": "/images/posters/the-rookie.jpg",
+    "Grey's Anatomy": "/images/posters/greys-anatomy.jpg",
+    "NCIS": "/images/posters/ncis.jpg",
+    "Prison Break": "/images/posters/prison-break.jpg",
+    "Shameless": "/images/posters/shameless.jpg",
+    "Supernatural": "/images/posters/supernatural.jpg",
+    "Miraculous: Tales of Ladybug & Cat Noir": "/images/posters/miraculous.jpg",
+    "Alien: Earth": "/images/posters/alien-earth.jpg",
+    "In the Mud": "/images/posters/in-the-mud.jpg"
+  };
+
+  // Function to use cached image if available, otherwise fallback to API image
+  const getOptimizedPosterUrl = (show: Show): string => {
+    return cachedImageMap[show.title] || show.posterUrl || "";
+  };
+
+  // Function to preload all images from real data
+  const preloadImages = async (showsData: Show[]): Promise<void> => {
+    return new Promise((resolve) => {
+      let loadedCount = 0;
+      const totalImages = showsData.filter(show => show.posterUrl).length;
+      
+      if (totalImages === 0) {
+        resolve();
+        return;
+      }
+
+      showsData.forEach(show => {
+        if (show.posterUrl) {
+          const img = new Image();
+          img.onload = img.onerror = () => {
+            loadedCount++;
+            if (loadedCount === totalImages) {
+              resolve();
+            }
+          };
+          img.src = show.posterUrl;
+        }
+      });
+    });
+  };
   const [platformFilter, setPlatformFilter] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [isRealData, setIsRealData] = useState(false);
@@ -57,6 +108,14 @@ function App() {
 
         const { data } = await axios.get("/api/shows", { params });
 
+        // Store real data but don't display it yet
+        setRealShowData(data);
+        
+        // Preload all images in background
+        await preloadImages(data);
+        setImagesPreloaded(true);
+        
+        // Now switch to real data with all images ready
         setShows(data);
         setIsRealData(true);
       } catch (e) {
@@ -327,9 +386,9 @@ function App() {
               alignItems: window.innerWidth <= 768 ? "center" : "flex-start"
             }}>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "15px" }}>
-                {show.posterUrl && (
+                {(show.posterUrl || cachedImageMap[show.title]) && (
                   <img
-                    src={show.posterUrl}
+                    src={getOptimizedPosterUrl(show)}
                     alt={show.title}
                     style={{
                       width: "150px",
@@ -834,9 +893,9 @@ function App() {
                       e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)";
                     }}
                   >
-                    {show.posterUrl && (
+                    {(show.posterUrl || cachedImageMap[show.title]) && (
                       <img
-                        src={show.posterUrl}
+                        src={getOptimizedPosterUrl(show)}
                         alt={show.title}
                         style={{
                           width: "100%", 
@@ -906,10 +965,13 @@ function App() {
             animation: "spin 2s linear infinite"
           }}>🔄</div>
           <div style={{ marginBottom: "0.5rem", fontWeight: 600 }}>
-            Loading more shows...
+            {realShowData.length > 0 ? "Preloading images..." : "Loading more shows..."}
           </div>
           <div style={{ fontSize: "0.9rem", color: "#888" }}>
-            Fetching real-time data from streaming platforms
+            {realShowData.length > 0 
+              ? "Preparing seamless transition to real data" 
+              : "Fetching real-time data from streaming platforms"
+            }
           </div>
         </div>
       )}
