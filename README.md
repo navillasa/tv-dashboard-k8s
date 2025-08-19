@@ -26,8 +26,6 @@ A comprehensive TV show aggregation platform built to demonstrate enterprise-lev
 - **Multi-Environment GitOps**: Automated dev deployment, manual prod promotion via ArgoCD
 - **Complete CI/CD Pipeline**: GitHub Actions builds, tests, and deploys with semantic versioning
 - **Container Registry**: Google Container Registry integration
-- **Secrets Management**: HashiCorp Vault with External Secrets Operator
-- **GitOps Deployment**: ArgoCD with automated sync and rollback
 - **Observability**: Prometheus metrics + Grafana dashboards with custom business KPIs
 - **Production Security**: HashiCorp Vault + External Secrets for sensitive data management
 
@@ -260,7 +258,6 @@ tv-dashboard-k8s/
 ### **🌐 View Live Deployment**
 - **Production**: [tv-hub.navillasa.dev](https://tv-hub.navillasa.dev) 
 - **Monitoring**: [monitoring.navillasa.dev](https://monitoring.navillasa.dev)
-- **ArgoCD**: [argocd.navillasa.dev](https://argocd.navillasa.dev)
 
 ### **💻 Local Development**
 ```bash
@@ -342,7 +339,6 @@ This project demonstrates measurable DevOps improvements:
 | **Environment Consistency** | Manual setup | IaC + GitOps | 100% reproducible |
 | **Security Posture** | Env file secrets | Vault integration | Enterprise-grade |
 | **Monitoring Coverage** | None | Full observability | Complete visibility |
-| **Cost Transparency** | Unknown | Real-time tracking | Full cost tracking |
 
 ---
 
@@ -350,7 +346,7 @@ This project demonstrates measurable DevOps improvements:
 
 ### **🌐 Live Applications** 
 1. **TV Hub Production**: [tv-hub.navillasa.dev](http://tv-hub.navillasa.dev) - Full application with instant loading
-2. **Business Intelligence Dashboard**: [monitoring.navillasa.dev](https://monitoring.navillasa.dev) - Real-time metrics (demo/password)
+2. **Business Intelligence Dashboard**: [monitoring.navillasa.dev](https://monitoring.navillasa.dev) - Real-time metrics
 
 ### **🔍 Technical Deep Dive**
 3. **CI/CD Pipeline**: [GitHub Actions](https://github.com/navillasa/tv-dashboard-k8s/actions) - Automated build/test/deploy
@@ -364,4 +360,4 @@ This project demonstrates measurable DevOps improvements:
 
 - 📧 **Email**: navillasa.dev@gmail.com
 - 💼 **LinkedIn**: [linkedin.com/in/natalievillasana](https://www.linkedin.com/in/natalievillasana)
-- 🌐 **Portfolio**: [navillasa.github.io](https://navillasa.github.io)
+- 🌐 **Portfolio**: [navillasa.dev](https://navillasa.dev)
