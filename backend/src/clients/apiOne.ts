@@ -123,21 +123,43 @@ export async function fetchFromApiOne(platforms: string[]): Promise<Show[]> {
           console.log(`[apiOne] ${platform} fetched ${data.results.length} shows, first:`, data.results[0]);
         }
 
+        // Cached image mapping for instant loading
+        const cachedImageMap: Record<string, string> = {
+          "Wednesday": "/images/posters/wednesday.jpg",
+          "Breaking Bad": "/images/posters/breaking-bad.jpg", 
+          "Squid Game": "/images/posters/squid-game.jpg",
+          "The Simpsons": "/images/posters/the-simpsons.jpg",
+          "The Summer I Turned Pretty": "/images/posters/summer-turned-pretty.jpg",
+          "The Rookie": "/images/posters/the-rookie.jpg",
+          "Grey's Anatomy": "/images/posters/greys-anatomy.jpg",
+          "NCIS": "/images/posters/ncis.jpg",
+          "Prison Break": "/images/posters/prison-break.jpg",
+          "Shameless": "/images/posters/shameless.jpg",
+          "Supernatural": "/images/posters/supernatural.jpg",
+          "Miraculous: Tales of Ladybug & Cat Noir": "/images/posters/miraculous.jpg",
+          "Alien: Earth": "/images/posters/alien-earth.jpg",
+          "In the Mud": "/images/posters/in-the-mud.jpg"
+        };
+
         const basicShows = (data.results || [])
           .slice(0, 15)
-          .map((show: any) => ({
-            id: show.id?.toString() ?? "",
-            title: show.name ?? "",
-            platforms: [canonicalPlatform],  // Changed to array
-            platform: canonicalPlatform,     // Keep for compatibility during transition
-            airDate: show.first_air_date ?? "",
-            posterUrl: show.poster_path
-              ? `https://image.tmdb.org/t/p/w500${show.poster_path}`
-              : "",
-            trailerUrl: "",
-            description: show.overview ?? "",
-            popularity: show.popularity ?? 0,
-          }));
+          .map((show: any) => {
+            const title = show.name ?? "";
+            const tmdbUrl = show.poster_path ? `https://image.tmdb.org/t/p/w500${show.poster_path}` : "";
+            const posterUrl = cachedImageMap[title] || tmdbUrl;  // Use cached image if available
+            
+            return {
+              id: show.id?.toString() ?? "",
+              title,
+              platforms: [canonicalPlatform],  // Changed to array
+              platform: canonicalPlatform,     // Keep for compatibility during transition
+              airDate: show.first_air_date ?? "",
+              posterUrl,
+              trailerUrl: "",
+              description: show.overview ?? "",
+              popularity: show.popularity ?? 0,
+            };
+          });
 
         // Fetch detailed info for top 10 shows only to avoid too many API calls
         const detailedShows = await Promise.all(
