@@ -31,8 +31,8 @@ A comprehensive TV show aggregation platform built to demonstrate enterprise-lev
 - ✅ **Production Deployment**: Live at [tv-hub.navillasa.dev](http://tv-hub.navillasa.dev)
 - ✅ **Vault Integration**: Secure secrets management implemented
 - ✅ **GitOps Workflow**: ArgoCD managing multi-environment deployments
-- 🚧 **Monitoring Dashboard**: Prometheus/Grafana stack deployed, dashboards in progress
-- 📋 **Next Priority**: Public monitoring dashboard with basic auth
+- ✅ **Live Monitoring Dashboard**: Public Grafana dashboard with real-time metrics at [monitoring.navillasa.dev](https://monitoring.navillasa.dev)
+- ✅ **Performance Optimized**: Instant loading with mock data fallback
 
 ---
 
@@ -44,8 +44,16 @@ A comprehensive TV show aggregation platform built to demonstrate enterprise-lev
 - **Data Sources**: TMDB + TVmaze APIs with real-time updates
 - **UI**: Responsive React frontend with platform filtering and detailed modals
 
-### 🎛️ **ArgoCD GitOps Dashboard**
-- **URL**: [argocd.navillasa.dev](https://argocd.navillasa.dev) (Only I can use it for now though 🤫)
+### 📊 **Live Business Intelligence Dashboard**
+- **URL**: [TV Hub Business Intelligence Dashboard](https://monitoring.navillasa.dev/d/e0c978bd-6077-403e-ab3b-ba03f4b34962/tv-hub-business-intelligence-dashboard)
+- **Access**: Basic auth (`demo` / `password`)
+- **Features**: Comprehensive business analytics and production monitoring
+- **Analytics**: Platform popularity rankings, real-time user activity, API performance metrics
+- **Security**: Attack detection, system resource monitoring, response time analysis
+- **Business Insights**: Netflix leads with 37 requests, 4,284+ total API calls, 100% API success rate
+
+![Business Intelligence Dashboard](./docs/images/dashboard-screenshot.png)
+*Interactive dashboard showing streaming platform analytics and production metrics*
 
 ---
 
