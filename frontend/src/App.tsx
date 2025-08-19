@@ -112,6 +112,10 @@ function App() {
 
   useEffect(() => {
     async function fetchShows() {
+      // NUCLEAR DEBUG - This should be IMPOSSIBLE to miss
+      console.log("🚨🚨🚨 FETCH SHOWS STARTING - NEW VERSION DEPLOYED! 🚨🚨🚨");
+      alert("🚨 NEW VERSION LOADING - CHECK CONSOLE! 🚨");
+      
       setLoading(true);
       try {
         const selected =
