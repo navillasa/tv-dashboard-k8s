@@ -64,10 +64,11 @@ function App() {
 
   // Function to use cached image if available, otherwise fallback to API image
   const getOptimizedPosterUrl = (show: Show): string => {
-    return cachedImageMap[show.title] || show.posterUrl || "";
+    // This is now redundant since we optimize in the data mapping, but kept for safety
+    return show.posterUrl || "";
   };
 
-  // Function to preload all images from real data
+  // Function to preload all images from real data with timeout
   const preloadImages = async (showsData: Show[]): Promise<void> => {
     return new Promise((resolve) => {
       let loadedCount = 0;
@@ -78,12 +79,19 @@ function App() {
         return;
       }
 
+      // Timeout after 10 seconds regardless of loading status
+      const timeout = setTimeout(() => {
+        console.log(`Image preloading timed out. Loaded ${loadedCount}/${totalImages} images.`);
+        resolve();
+      }, 10000);
+
       showsData.forEach(show => {
         if (show.posterUrl) {
           const img = new Image();
           img.onload = img.onerror = () => {
             loadedCount++;
             if (loadedCount === totalImages) {
+              clearTimeout(timeout);
               resolve();
             }
           };
@@ -108,16 +116,17 @@ function App() {
 
         const { data } = await axios.get("/api/shows", { params });
 
-        // Store real data but don't display it yet
-        setRealShowData(data);
+        // Immediately use real data but with cached images where available
+        const optimizedData = data.map(show => ({
+          ...show,
+          posterUrl: cachedImageMap[show.title] || show.posterUrl
+        }));
         
-        // Preload all images in background
-        await preloadImages(data);
-        setImagesPreloaded(true);
-        
-        // Now switch to real data with all images ready
-        setShows(data);
+        setShows(optimizedData);
         setIsRealData(true);
+        
+        // Store for loading indicator (no longer needed but kept for state consistency)
+        setRealShowData(data);
       } catch (e) {
         // Keep mock data if API fails
         if (!isRealData) {
