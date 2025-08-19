@@ -144,14 +144,14 @@ function App() {
         const { data } = await axios.get("/api/shows", { params });
         console.log(`📡 Received ${data.length} shows from API`);
         
-        // Show tiles immediately - no waiting, no staggered delays!
+        // Show tiles immediately - no waiting!
         setShows(data);
         setIsRealData(true);
         setRealShowData(data);
-        setAnimatingTiles(new Set()); // Clear any previous animations
+        setAnimatingTiles(new Set());
+        setLoading(false); // Stop loading immediately when data arrives
       } catch (e) {
         console.error("Failed to fetch shows:", e);
-      } finally {
         setLoading(false);
       }
     }
@@ -849,7 +849,10 @@ function App() {
           color: "#666",
           fontSize: "1.1rem"
         }}>
-          <div style={{ marginBottom: "1rem" }}>🔄</div>
+          <div style={{ 
+            marginBottom: "1rem",
+            animation: "spin 2s linear infinite"
+          }}>📺</div>
           Loading shows...
         </div>
       ) : (
@@ -964,27 +967,25 @@ function App() {
                           }}
                         />
                       ) : null}
-                      {/* Always show platform-colored background with spinning icon */}
-                      <div style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "100%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        color: platform.color,
-                        fontSize: "2rem",
-                        opacity: 0.7,
-                        zIndex: 1
-                      }}>
+                      {/* Static platform-colored background icon - only show when no poster */}
+                      {!(show.posterUrl || cachedImageMap[show.title]) && (
                         <div style={{
-                          animation: "spin 2s linear infinite"
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          width: "100%",
+                          height: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: platform.color,
+                          fontSize: "2rem",
+                          opacity: 0.7,
+                          zIndex: 1
                         }}>
                           📺
                         </div>
-                      </div>
+                      )}
                     </div>
                     <div style={{ 
                       fontWeight: 600, 
