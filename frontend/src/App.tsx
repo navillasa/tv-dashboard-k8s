@@ -25,7 +25,7 @@ const ALL_PLATFORMS = [
 ];
 
 function App() {
-  const [shows, setShows] = useState<Show[]>(MOCK_SHOWS.slice(0, 14)); // Start with first 14 mock shows
+  const [shows, setShows] = useState<Show[]>([]); // Start empty - no mock data!
   const [imagesPreloaded, setImagesPreloaded] = useState(false);
   const [realShowData, setRealShowData] = useState<Show[]>([]);
   
@@ -141,10 +141,8 @@ function App() {
         // Store for loading indicator (no longer needed but kept for state consistency)
         setRealShowData(data);
       } catch (e) {
-        // Keep mock data if API fails
-        if (!isRealData) {
-          setShows(MOCK_SHOWS.slice(0, 14));
-        }
+        // If API fails, just keep loading state - no mock data fallback
+        console.error("Failed to fetch shows:", e);
       } finally {
         setLoading(false);
       }
@@ -968,8 +966,8 @@ function App() {
         </div>
       )}
       
-      {/* Loading indicator when showing mock data */}
-      {!isRealData && !loading && (
+      {/* Loading indicator when no data yet */}
+      {shows.length === 0 && !loading && (
         <div style={{ 
           textAlign: "center", 
           padding: "3rem 2rem",
