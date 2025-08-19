@@ -862,7 +862,7 @@ function App() {
               : platformFilter.length > 1 
                 ? `repeat(${platformFilter.length}, minmax(200px, 1fr))`
                 : window.innerWidth <= 768 
-                  ? "repeat(auto-fit, minmax(280px, 1fr))" // Mobile: stack more platforms per row
+                  ? "repeat(3, minmax(120px, 1fr))" // Mobile: 3 columns for compact view
                   : window.innerWidth <= 1024
                     ? "repeat(auto-fit, minmax(200px, 1fr))" // Tablet: smaller columns
                     : "repeat(7, minmax(150px, 1fr))", // Desktop: original layout
@@ -964,7 +964,7 @@ function App() {
                           }}
                         />
                       ) : null}
-                      {/* Always show platform-colored background with icon */}
+                      {/* Always show platform-colored background with spinning icon */}
                       <div style={{
                         position: "absolute",
                         top: 0,
@@ -979,7 +979,11 @@ function App() {
                         opacity: 0.7,
                         zIndex: 1
                       }}>
-                        📺
+                        <div style={{
+                          animation: "spin 2s linear infinite"
+                        }}>
+                          📺
+                        </div>
                       </div>
                     </div>
                     <div style={{ 
