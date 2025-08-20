@@ -11,6 +11,13 @@ spec:
   - host: tv-hub.navillasa.dev
     http:
       paths:
+      - path: /monitoring
+        pathType: Prefix
+        backend:
+          service:
+            name: grafana-monitoring
+            port:
+              number: 3000
       - path: /api
         pathType: Prefix
         backend:
