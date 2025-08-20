@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana-monitoring
+  namespace: tv-dashboard-prod
+  labels:
+    app: grafana-monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana-monitoring
+  template:
+    metadata:
+      labels:
+        app: grafana-monitoring
+    spec:
+      containers:
+      - name: grafana
+        image: grafana/grafana:10.0.0
+        ports:
+        - containerPort: 3000
+          name: web
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        env:
+        - name: GF_SECURITY_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: prod-grafana-admin
+              key: password
+        - name: GF_INSTALL_PLUGINS
+          value: "grafana-piechart-panel"
+        - name: GF_SERVER_ROOT_URL
+          value: "https://tv-hub.navillasa.dev/monitoring"
+        - name: GF_SERVER_SERVE_FROM_SUB_PATH
+          value: "true"
+        - name: GF_SECURITY_ALLOW_EMBEDDING
+          value: "true"
+        - name: GF_AUTH_ANONYMOUS_ENABLED
+          value: "true"
+        - name: GF_AUTH_ANONYMOUS_ORG_ROLE
+          value: "Viewer"
+        - name: GF_USERS_ALLOW_SIGN_UP
+          value: "false"
+        - name: GF_USERS_AUTO_ASSIGN_ORG_ROLE
+          value: "Viewer"
+        volumeMounts:
+        - name: grafana-data
+          mountPath: /var/lib/grafana
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+      volumes:
+      - name: grafana-data
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-monitoring
+  namespace: tv-dashboard-prod
+  labels:
+    app: grafana-monitoring
+spec:
+  selector:
+    app: grafana-monitoring
+  ports:
+  - name: web
+    port: 3000
+    targetPort: 3000
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: grafana-admin
+  namespace: tv-dashboard-prod
+type: Opaque
+data:
+  # admin / admin123
+  password: YWRtaW4xMjM=

@@ -11,6 +11,7 @@ resources:
   - frontend-nginx-configmap.yaml
   - grafana-external-service.yaml
   - grafana-proxy.yaml
+  - grafana-prod.yaml
   # Note: Secrets managed by External Secrets Operator + Vault
 
 namePrefix: prod-

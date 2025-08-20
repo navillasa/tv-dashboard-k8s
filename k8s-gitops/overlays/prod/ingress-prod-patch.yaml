@@ -15,7 +15,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: prod-grafana-proxy
+            name: prod-grafana-monitoring
             port:
               number: 3000
       - path: /api
