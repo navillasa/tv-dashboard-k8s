@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana-proxy
+  namespace: tv-dashboard-prod
+  labels:
+    app: grafana-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana-proxy
+  template:
+    metadata:
+      labels:
+        app: grafana-proxy
+    spec:
+      containers:
+      - name: nginx-proxy
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 100m
+            memory: 128Mi
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: grafana-proxy-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-proxy-config
+  namespace: tv-dashboard-prod
+data:
+  nginx.conf: |
+    events {
+      worker_connections 1024;
+    }
+    
+    http {
+      upstream grafana {
+        server grafana.monitoring.svc.cluster.local:3000;
+      }
+      
+      server {
+        listen 80;
+        
+        location / {
+          proxy_pass http://grafana;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header X-Forwarded-Host $host;
+          proxy_set_header X-Forwarded-Port $server_port;
+        }
+      }
+    }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-proxy
+  namespace: tv-dashboard-prod
+  labels:
+    app: grafana-proxy
+spec:
+  selector:
+    app: grafana-proxy
+  ports:
+  - name: http
+    port: 3000
+    targetPort: 80
+  type: ClusterIP

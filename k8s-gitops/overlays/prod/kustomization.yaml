@@ -10,6 +10,7 @@ resources:
   - external-secret-api.yaml
   - frontend-nginx-configmap.yaml
   - grafana-external-service.yaml
+  - grafana-proxy.yaml
   # Note: Secrets managed by External Secrets Operator + Vault
 
 namePrefix: prod-
