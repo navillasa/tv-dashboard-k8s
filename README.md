@@ -40,7 +40,7 @@ A comprehensive TV show aggregation platform built to demonstrate enterprise-lev
 - **UI**: Responsive React frontend with platform filtering and detailed modals
 
 ### 📊 **Live Business Intelligence Dashboard**
-- **URL**: [TV Hub Business Intelligence Dashboard](https://monitoring.navillasa.dev/d/e0c978bd-6077-403e-ab3b-ba03f4b34962/tv-hub-business-intelligence-dashboard)
+- **URL**: [TV Hub Business Intelligence Dashboard](https://monitoring.navillasa.dev/d/e633cf5f-2c8b-483b-90a1-aaa85bddd4d9/tv-hub-business-intelligence-dashboard?orgId=1&refresh=15s)
 - **Features**: Comprehensive business analytics and production monitoring
 - **Analytics**: Platform-specific popularity rankings, real-time user activity, API performance metrics
 - **Security**: Attack detection, system resource monitoring, response time analysis
@@ -257,7 +257,7 @@ tv-dashboard-k8s/
 
 ### **🌐 View Live Deployment**
 - **Production**: [tv-hub.navillasa.dev](https://tv-hub.navillasa.dev) 
-- **Monitoring**: [monitoring.navillasa.dev](https://monitoring.navillasa.dev)
+- **Monitoring**: [monitoring.navillasa.dev](https://monitoring.navillasa.dev/d/e633cf5f-2c8b-483b-90a1-aaa85bddd4d9/tv-hub-business-intelligence-dashboard?orgId=1&refresh=15s)
 
 ### **💻 Local Development**
 ```bash
@@ -346,7 +346,7 @@ This project demonstrates measurable DevOps improvements:
 
 ### **🌐 Live Applications** 
 1. **TV Hub Production**: [tv-hub.navillasa.dev](http://tv-hub.navillasa.dev) - Full application with instant loading
-2. **Business Intelligence Dashboard**: [monitoring.navillasa.dev](https://monitoring.navillasa.dev) - Real-time metrics
+2. **Business Intelligence Dashboard**: [monitoring.navillasa.dev](https://monitoring.navillasa.dev/d/e633cf5f-2c8b-483b-90a1-aaa85bddd4d9/tv-hub-business-intelligence-dashboard?orgId=1&refresh=15s) - Real-time metrics
 
 ### **🔍 Technical Deep Dive**
 3. **CI/CD Pipeline**: [GitHub Actions](https://github.com/navillasa/tv-dashboard-k8s/actions) - Automated build/test/deploy
