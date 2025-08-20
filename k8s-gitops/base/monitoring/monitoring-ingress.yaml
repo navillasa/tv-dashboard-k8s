@@ -8,10 +8,6 @@ metadata:
     kubernetes.io/ingress.global-static-ip-name: "grafana-ip"
     networking.gke.io/managed-certificates: "monitoring-ssl"
 spec:
-  tls:
-  - hosts:
-    - monitoring.navillasa.dev
-    secretName: monitoring-ssl-secret
   rules:
   - host: monitoring.navillasa.dev
     http:

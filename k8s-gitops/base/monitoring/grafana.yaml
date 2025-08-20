@@ -37,9 +37,9 @@ spec:
         - name: GF_INSTALL_PLUGINS
           value: "grafana-piechart-panel"
         - name: GF_SERVER_ROOT_URL
-          value: "https://tv-hub.navillasa.dev/monitoring"
+          value: "https://monitoring.navillasa.dev"
         - name: GF_SERVER_SERVE_FROM_SUB_PATH
-          value: "true"
+          value: "false"
         - name: GF_SECURITY_ALLOW_EMBEDDING
           value: "true"
         - name: GF_AUTH_ANONYMOUS_ENABLED
