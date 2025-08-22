@@ -13,21 +13,54 @@ A comprehensive TV show aggregation platform built to demonstrate enterprise-lev
 
 ---
 
-## 🌟 **Key Features**
+## 🌟 **Infra Highlights**
 
-### ⛴️  **Production-Ready Deployment**
-- **Production Deployment**: Live at [tv-hub.navillasa.dev](http://tv-hub.navillasa.dev)
-- **GKE Autopilot**: Cost-effective Kubernetes with auto-scaling
-- **Custom Domain + SSL**: Automatic certificate management
-- **GitOps with ArgoCD**: Continuous deployment from Git
+- **Base Infrastructure**: Terraform on GKE Autopilot with managed SSL/DNS
+- **GitOps deployment**: ArgoCD with dev auto-sync + manual prod promotion
+- **Security**: HashiCorp Vault + External Secrets Operator
+- **Performance**: Instant loading, cached images, progressive enhancement
+- **Observability stack**: Prometheus metrics + custom Grafana dashboards
 
-### 🔧 **DevOps Infrastructure** 
-- **Infrastructure as Code**: Full Terraform deployment on GKE Autopilot
-- **Multi-Environment GitOps**: Automated dev deployment, manual prod promotion via ArgoCD
-- **Complete CI/CD Pipeline**: GitHub Actions builds, tests, and deploys with semantic versioning
-- **Container Registry**: Google Container Registry integration
-- **Observability**: Prometheus metrics + Grafana dashboards with custom business KPIs
-- **Production Security**: HashiCorp Vault + External Secrets for sensitive data management
+---
+
+## ✨🖥️ **DevOps Technology Stack & Practices**
+
+This project demonstrates enterprise-level DevOps practices using modern tooling:
+
+### 1. **Infrastructure as Code (Terraform)**
+- **GKE Autopilot Provisioning**: Complete infrastructure defined in code
+- **Network Configuration**: Auto-managed VPC, subnets, and firewall rules
+- **DNS Management**: Automated domain and subdomain setup
+- **Resource Optimization**: Cost-effective, right-sized infrastructure
+- **[View Terraform Code](./infra/)**
+
+### 2. **GitOps & Continuous Delivery**
+- **ArgoCD Implementation**: Complete GitOps workflow with environment promotion
+- **Multi-Environment Strategy**: Separate dev and prod environments with consistent configurations
+- **Kustomize Overlays**: Environment-specific customization with shared base resources
+- **Deployment Promotion**: Environment promotion pipeline with manual approval gates for production releases
+
+- **[View GitOps Setup](./k8s-gitops/)**
+
+### 3. **CI/CD Pipeline (GitHub Actions)**
+- **Automated Workflows**: Build, test, and deploy on every commit
+- **Multi-stage Testing**: Static analysis, unit tests, and integration tests
+- **Semantic Versioning**: Automated version generation for traceability
+- **Container Security**: Image scanning and validation
+- **[View CI/CD Pipeline](./.github/workflows/ci.yml)**
+
+### 4. **Secrets Management & Security**
+- **HashiCorp Vault**: Central secrets management with auto-unseal
+- **External Secrets Operator**: Kubernetes integration for secure secret synchronization
+- **Secret Rotation**: Automated credential lifecycle management
+- **Service Account Isolation**: Principle of least privilege implementation
+- **[View Security Implementation](./k8s-gitops/base/vault/)**
+
+### 5. **Observability Stack**
+- **Prometheus & Grafana**: Metrics collection & data visualization deployed via GitOps
+- **Custom Business Metrics**: Infrastructure and application metrics including platform popularity, API performance, user activity
+- **Grafana Dashboards**: Public monitoring dashboard with business intelligence
+- **Performance Analytics**: Response time and memory/CPU utilization monitoring
 
 ---
 
@@ -36,7 +69,7 @@ A comprehensive TV show aggregation platform built to demonstrate enterprise-lev
 ### 📱 **TV Hub Dashboard** 
 - **URL**: [http://tv-hub.navillasa.dev](http://tv-hub.navillasa.dev)
 - **Features**: Multi-platform TV show aggregation with trending rankings
-- **Data Sources**: TMDB + TVmaze APIs with real-time updates
+- **Multi-platform aggregation**: TMDB + TVMaze APIs with deduplication & real-time updates
 - **UI**: Responsive React frontend with platform filtering and detailed modals
 
 ### 📊 **Live Business Intelligence Dashboard**
@@ -292,40 +325,13 @@ kubectl get applications -n argocd
 
 ---
 
-## ✅ **Production Features**
-- [x] **Multi-platform aggregation**: TMDB + TVMaze APIs with intelligent deduplication
-- [x] **GitOps deployment**: ArgoCD with dev auto-sync + manual prod promotion  
-- [x] **Observability stack**: Prometheus metrics + custom Grafana dashboards
-- [x] **Security**: HashiCorp Vault + External Secrets Operator
-- [x] **Performance**: Instant loading, cached images, progressive enhancement
-- [x] **Infrastructure**: Terraform on GKE Autopilot with managed SSL/DNS
-
-### **✅ Recently Completed**
-
-#### **GitOps Foundation**
-- [x] Multi-environment setup with Kustomize overlays (dev/prod)
-- [x] ArgoCD deployment with automated GitOps workflows
-- [x] Environment promotion pipeline with manual approval gates
-- [x] Automated CI/CD with GitHub Actions integration
-
-#### **Observability Stack**
-- [x] Prometheus + Grafana deployment via GitOps
-- [x] Custom business metrics (platform popularity, API performance, user activity)
-- [x] Public monitoring dashboard with streaming analytics
-- [x] Infrastructure monitoring (memory, CPU, response times)
-
-#### **Security & Secrets**
-- [x] HashiCorp Vault integration for secrets management
-- [x] External Secrets Operator for K8s secret synchronization
-- [x] Production-ready security with service account isolation
-
 ### **🚧 Future Enhancements**
 
 #### **Performance & Scale**  
-- [x] Frontend performance optimization with instant mock data loading
+- [ ] Frontend performance optimization
 - [ ] Redis caching layer for API response optimization
 - [ ] Horizontal Pod Autoscaling based on demand
-- [ ] Cost optimization dashboard with resource usage insights
+- [ ] Cost optimization dashboard
 
 ---
 
@@ -345,7 +351,7 @@ This project demonstrates measurable DevOps improvements:
 ## 🧿 **Getting Started for Reviewers**
 
 ### **🌐 Live Applications** 
-1. **TV Hub Production**: [tv-hub.navillasa.dev](http://tv-hub.navillasa.dev) - Full application with instant loading
+1. **TV Hub Production**: [tv-hub.navillasa.dev](http://tv-hub.navillasa.dev) - Full application
 2. **Business Intelligence Dashboard**: [monitoring.navillasa.dev](https://monitoring.navillasa.dev/d/e633cf5f-2c8b-483b-90a1-aaa85bddd4d9/tv-hub-business-intelligence-dashboard?orgId=1&refresh=15s) - Real-time metrics
 
 ### **🔍 Technical Deep Dive**
