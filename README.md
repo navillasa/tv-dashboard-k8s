@@ -61,6 +61,7 @@ This project demonstrates enterprise-level DevOps practices using modern tooling
 - **Custom Business Metrics**: Infrastructure and application metrics including platform popularity, API performance, user activity
 - **Grafana Dashboards**: Public monitoring dashboard with business intelligence
 - **Performance Analytics**: Response time and memory/CPU utilization monitoring
+- **[View Live Metrics](https://monitoring.navillasa.dev/)**
 
 ---
 
