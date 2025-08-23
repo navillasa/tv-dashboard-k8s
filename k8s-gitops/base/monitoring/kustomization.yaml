@@ -9,6 +9,7 @@ resources:
 - grafana-dashboard-config.yaml
 - grafana-dashboards.yaml
 - grafana.yaml
+- grafana-external-secret.yaml
 - monitoring-ingress.yaml
 - monitoring-certificate.yaml
 # Note: basic-auth secret must be created manually
