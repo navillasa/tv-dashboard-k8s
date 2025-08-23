@@ -9,7 +9,7 @@
 ![TV Hub Dashboard](docs/images/tv-hub-screenshot2.png)
 *Live dashboard showing popular shows across Netflix, Disney+, Prime Video, and more streaming platforms*
 
-A comprehensive TV show aggregation platform built to demonstrate enterprise-level DevOps engineering practices. While the application itself is intentionally simple (displaying trending TV shows from multiple platforms), the infrastructure and deployment pipeline showcase advanced concepts including GitOps, observability, security, and cloud-native architecture patterns.
+A comprehensive TV show aggregation platform built to demonstrate enterprise-level DevOps engineering practices. While the application itself is intentionally simple, displaying trending TV shows from multiple platforms, the infrastructure and deployment pipeline showcase advanced concepts including GitOps, observability, security, and cloud-native architecture patterns.
 
 ---
 
@@ -19,6 +19,7 @@ A comprehensive TV show aggregation platform built to demonstrate enterprise-lev
 - **GitOps Deployment**: ArgoCD with dev auto-sync + manual prod promotion
 - **Security**: HashiCorp Vault + External Secrets Operator
 - **Observability stack**: Prometheus metrics + custom Grafana dashboards
+- **Backend & Database**: Node.js (Express, TypeScript) API with PostgreSQL
 - **Frontend**: React + Vite SPA with responsive design built with TypeScript
 
 ---
