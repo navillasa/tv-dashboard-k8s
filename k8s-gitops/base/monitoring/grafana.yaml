@@ -101,13 +101,5 @@ spec:
     port: 3000
     targetPort: 3000
   type: LoadBalancer
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: grafana-admin
-  namespace: monitoring
-type: Opaque
-data:
-  # Secure randomly generated password - managed via External Secrets in production
-  password: UUJWdXFXYjNzQnVlajM3YjlyVVFTd0dWbzRpKzRBYm5VdkxEb2laQVEvbz0=
+# Secret should be managed externally - not in git!
+# kubectl create secret generic grafana-admin --from-literal=password='your-secure-password' -n monitoring
