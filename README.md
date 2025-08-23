@@ -23,6 +23,33 @@ A comprehensive TV show aggregation platform built to demonstrate enterprise-lev
 
 ---
 
+## 🌐 **Live Application Access**
+
+### 📱 **TV Hub Dashboard** 
+- **URL**: [http://tv-hub.navillasa.dev](http://tv-hub.navillasa.dev)
+- **Features**: Multi-platform TV show aggregation with trending rankings
+- **Multi-platform aggregation**: TMDB + TVMaze APIs with deduplication & real-time updates
+- **UI**: Responsive React frontend with platform filtering and detailed modals
+
+### 📊 **Live Business Intelligence Dashboard**
+- **URL**: [TV Hub Business Intelligence Dashboard](https://monitoring.navillasa.dev/d/e633cf5f-2c8b-483b-90a1-aaa85bddd4d9/tv-hub-business-intelligence-dashboard?orgId=1&refresh=15s)
+- **Features**: Comprehensive business analytics and production monitoring
+- **Analytics**: Platform-specific popularity rankings, real-time user activity, API performance metrics
+- **Security**: Attack detection, system resource monitoring, response time analysis
+- **Business Insights**: E.g. "Netflix leads with 37 requests, 4,284+ total API calls, 100% API success rate"
+
+![Business Intelligence Dashboard](./docs/images/dashboard-screenshot.png)
+*Interactive dashboard showing streaming platform analytics and production metrics*
+
+### 🚀 **Automated Deployment Pipeline**
+- **CI/CD Flow**: `git push → GitHub Actions → Container Registry → ArgoCD → Kubernetes`
+- **Development**: Auto-deploys every successful build from main branch within 5-10 minutes
+- **Production**: Manual promotion via `./scripts/promote-to-prod.sh <version>` after dev testing
+- **Versioning**: Date-based semantic tags (e.g., `v20250819-abc123`) for clear traceability
+- **Safety**: Comprehensive test suite + manual production gate prevents untested deployments
+
+---
+
 ## ✨🖥️ **DevOps Technology Stack & Practices**
 
 This project demonstrates enterprise-level DevOps practices using modern tooling:
@@ -62,33 +89,6 @@ This project demonstrates enterprise-level DevOps practices using modern tooling
 - **Grafana Dashboards**: Public monitoring dashboard with business intelligence
 - **Performance Analytics**: Response time and memory/CPU utilization monitoring
 - **[View Live Metrics](https://monitoring.navillasa.dev/)**
-
----
-
-## 🌐 **Live Application Access**
-
-### 📱 **TV Hub Dashboard** 
-- **URL**: [http://tv-hub.navillasa.dev](http://tv-hub.navillasa.dev)
-- **Features**: Multi-platform TV show aggregation with trending rankings
-- **Multi-platform aggregation**: TMDB + TVMaze APIs with deduplication & real-time updates
-- **UI**: Responsive React frontend with platform filtering and detailed modals
-
-### 📊 **Live Business Intelligence Dashboard**
-- **URL**: [TV Hub Business Intelligence Dashboard](https://monitoring.navillasa.dev/d/e633cf5f-2c8b-483b-90a1-aaa85bddd4d9/tv-hub-business-intelligence-dashboard?orgId=1&refresh=15s)
-- **Features**: Comprehensive business analytics and production monitoring
-- **Analytics**: Platform-specific popularity rankings, real-time user activity, API performance metrics
-- **Security**: Attack detection, system resource monitoring, response time analysis
-- **Business Insights**: E.g. "Netflix leads with 37 requests, 4,284+ total API calls, 100% API success rate"
-
-![Business Intelligence Dashboard](./docs/images/dashboard-screenshot.png)
-*Interactive dashboard showing streaming platform analytics and production metrics*
-
-### 🚀 **Automated Deployment Pipeline**
-- **CI/CD Flow**: `git push → GitHub Actions → Container Registry → ArgoCD → Kubernetes`
-- **Development**: Auto-deploys every successful build from main branch within 5-10 minutes
-- **Production**: Manual promotion via `./scripts/promote-to-prod.sh <version>` after dev testing
-- **Versioning**: Date-based semantic tags (e.g., `v20250819-abc123`) for clear traceability
-- **Safety**: Comprehensive test suite + manual production gate prevents untested deployments
 
 ---
 
