@@ -13,13 +13,13 @@ A comprehensive TV show aggregation platform built to demonstrate enterprise-lev
 
 ---
 
-## 🌟 **Infra Highlights**
+## 🌟 **Project Highlights**
 
-- **Base Infrastructure**: Terraform on GKE Autopilot with managed SSL/DNS
-- **GitOps deployment**: ArgoCD with dev auto-sync + manual prod promotion
+- **Infrastructure**: Terraform on GKE Autopilot with managed SSL/DNS
+- **GitOps Deployment**: ArgoCD with dev auto-sync + manual prod promotion
 - **Security**: HashiCorp Vault + External Secrets Operator
-- **Performance**: Instant loading, cached images, progressive enhancement
 - **Observability stack**: Prometheus metrics + custom Grafana dashboards
+- **Frontend**: React + Vite SPA with responsive design built with TypeScript
 
 ---
 
@@ -289,10 +289,6 @@ tv-dashboard-k8s/
 
 ## 🛠️ **Quick Start**
 
-### **🌐 View Live Deployment**
-- **Production**: [tv-hub.navillasa.dev](https://tv-hub.navillasa.dev) 
-- **Monitoring**: [monitoring.navillasa.dev](https://monitoring.navillasa.dev/d/e633cf5f-2c8b-483b-90a1-aaa85bddd4d9/tv-hub-business-intelligence-dashboard?orgId=1&refresh=15s)
-
 ### **💻 Local Development**
 ```bash
 # 1. Clone & Start
@@ -345,11 +341,11 @@ This project demonstrates measurable DevOps improvements:
 | **Deployment Time** | Manual (30+ min) | Automated (3-5 min) | 85% faster |
 | **Environment Consistency** | Manual setup | IaC + GitOps | 100% reproducible |
 | **Security Posture** | Env file secrets | Vault integration | Enterprise-grade |
-| **Monitoring Coverage** | None | Full observability | Complete visibility |
+| **Monitoring Coverage** | None | End-to-end metrics | Real-time, full-stack visibility |
 
 ---
 
-## 🧿 **Getting Started for Reviewers**
+## 🧿 **Quick Links for Reviewers**
 
 ### **🌐 Live Applications** 
 1. **TV Hub Production**: [tv-hub.navillasa.dev](http://tv-hub.navillasa.dev) - Full application
