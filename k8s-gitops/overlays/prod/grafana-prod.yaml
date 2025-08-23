@@ -92,5 +92,5 @@ metadata:
   namespace: tv-dashboard-prod
 type: Opaque
 data:
-  # admin / admin123
-  password: YWRtaW4xMjM=
+  # Secure randomly generated password - managed via External Secrets in production
+  password: UUJWdXFXYjNzQnVlajM3YjlyVVFTd0dWbzRpKzRBYm5VdkxEb2laQVEvbz0=
