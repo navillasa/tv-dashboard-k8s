@@ -1,0 +1,34 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: tv-dashboard-prod
+
+resources:
+  - ../../base
+  - external-secrets-service-account.yaml
+  - external-secret-database.yaml
+  - external-secret-api.yaml
+  - frontend-nginx-configmap.yaml
+  # Note: Secrets managed by External Secrets Operator + Vault
+
+namePrefix: prod-
+
+labels:
+- pairs:
+    environment: production
+    promotion-tier: production
+
+patches:
+- path: postgres-prod-patch.yaml
+- path: backend-prod-patch.yaml
+- path: frontend-prod-patch.yaml
+- path: ingress-prod-patch.yaml
+- path: managed-certificate-prod-patch.yaml
+
+images:
+- name: tv-dashboard-backend
+  newName: gcr.io/tv-dashboard-k8s/tv-dashboard-backend
+  newTag: v20250819-8fe2268  # Latest with fast loading and optimizations
+- name: tv-dashboard-frontend
+  newName: gcr.io/tv-dashboard-k8s/tv-dashboard-frontend
+  newTag: v20250819-8fe2268  # Latest with instant tiles and progressive loading
