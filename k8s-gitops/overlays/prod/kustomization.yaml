@@ -6,7 +6,6 @@ namespace: tv-dashboard-prod
 resources:
   - ../../base
   - ../../base/vault
-  - namespace.yaml
   - external-secrets-service-account.yaml
   - external-secret-database.yaml
   - external-secret-api.yaml
