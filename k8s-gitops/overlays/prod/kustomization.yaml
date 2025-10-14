@@ -5,7 +5,6 @@ namespace: tv-dashboard-prod
 
 resources:
   - ../../base
-  - ../../base/vault
   - external-secrets-service-account.yaml
   - external-secret-database.yaml
   - external-secret-api.yaml
@@ -22,7 +21,6 @@ patches:
   - path: backend-homelab-patch.yaml
   - path: frontend-homelab-patch.yaml
   - path: ingress-homelab-patch.yaml
-  - path: vault-storage-patch.yaml
 
 images:
   - name: tv-dashboard-backend
