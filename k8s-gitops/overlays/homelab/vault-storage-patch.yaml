@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vault-storage
+  namespace: vault
+spec:
+  storageClassName: microk8s-hostpath
+  resources:
+    requests:
+      storage: 2Gi
