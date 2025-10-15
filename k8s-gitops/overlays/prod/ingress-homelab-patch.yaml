@@ -2,8 +2,15 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: tv-dashboard-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   ingressClassName: public
+  tls:
+  - hosts:
+    - tv-hub.navillasa.dev
+    secretName: tv-hub-tls
   rules:
   - host: tv-hub.navillasa.dev
     http:
