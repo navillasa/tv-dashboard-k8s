@@ -23,8 +23,8 @@ patches:
 
 images:
   - name: tv-dashboard-backend
-    newName: gcr.io/tv-dashboard-k8s/tv-dashboard-backend
+    newName: ghcr.io/navillasa/tv-dashboard-k8s/backend
     newTag: v20251015-22f74f5
   - name: tv-dashboard-frontend
-    newName: gcr.io/tv-dashboard-k8s/tv-dashboard-frontend
+    newName: ghcr.io/navillasa/tv-dashboard-k8s/frontend
     newTag: v20251015-22f74f5

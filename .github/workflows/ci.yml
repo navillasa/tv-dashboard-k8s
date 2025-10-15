@@ -79,35 +79,26 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
           echo "Generated version: $VERSION"
 
-      - name: Set up Google Cloud CLI
-        uses: google-github-actions/setup-gcloud@v2
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          project_id: tv-dashboard-k8s
-
-      - name: Authenticate with service account
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-
-      - name: Configure Docker for GCR and Artifact Registry
-        run: |
-          gcloud auth configure-docker gcr.io
-          gcloud auth configure-docker us-docker.pkg.dev
-          echo "Docker configured for GCR and Artifact Registry"
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push backend image
         run: |
-          docker build -t gcr.io/tv-dashboard-k8s/tv-dashboard-backend:${{ steps.version.outputs.VERSION }} ./backend
-          docker tag gcr.io/tv-dashboard-k8s/tv-dashboard-backend:${{ steps.version.outputs.VERSION }} gcr.io/tv-dashboard-k8s/tv-dashboard-backend:latest
-          docker push gcr.io/tv-dashboard-k8s/tv-dashboard-backend:${{ steps.version.outputs.VERSION }}
-          docker push gcr.io/tv-dashboard-k8s/tv-dashboard-backend:latest
+          docker build -t ghcr.io/${{ github.repository }}/backend:${{ steps.version.outputs.VERSION }} ./backend
+          docker tag ghcr.io/${{ github.repository }}/backend:${{ steps.version.outputs.VERSION }} ghcr.io/${{ github.repository }}/backend:latest
+          docker push ghcr.io/${{ github.repository }}/backend:${{ steps.version.outputs.VERSION }}
+          docker push ghcr.io/${{ github.repository }}/backend:latest
 
       - name: Build and push frontend image
         run: |
-          docker build -t gcr.io/tv-dashboard-k8s/tv-dashboard-frontend:${{ steps.version.outputs.VERSION }} ./frontend
-          docker tag gcr.io/tv-dashboard-k8s/tv-dashboard-frontend:${{ steps.version.outputs.VERSION }} gcr.io/tv-dashboard-k8s/tv-dashboard-frontend:latest
-          docker push gcr.io/tv-dashboard-k8s/tv-dashboard-frontend:${{ steps.version.outputs.VERSION }}
-          docker push gcr.io/tv-dashboard-k8s/tv-dashboard-frontend:latest
+          docker build -t ghcr.io/${{ github.repository }}/frontend:${{ steps.version.outputs.VERSION }} ./frontend
+          docker tag ghcr.io/${{ github.repository }}/frontend:${{ steps.version.outputs.VERSION }} ghcr.io/${{ github.repository }}/frontend:latest
+          docker push ghcr.io/${{ github.repository }}/frontend:${{ steps.version.outputs.VERSION }}
+          docker push ghcr.io/${{ github.repository }}/frontend:latest
 
       - name: Update dev deployment image tags
         run: |
