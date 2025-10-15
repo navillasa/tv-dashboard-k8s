@@ -40,10 +40,10 @@ I solved this by establishing clear **infrastructure layers**:
 - **Static IPs** (Terraform)
 - **Vault** (kubectl apply)
 - **External Secrets Operator** (Helm)
+- **ClusterSecretStore** (kubectl apply)
 
 ### Layer 1: GitOps Platform
 - **ArgoCD** (kubectl apply)
-- **ClusterSecretStore** (ArgoCD)
 
 ### Layer 2: Applications
 - **tv-dashboard-dev** (ArgoCD)
@@ -125,6 +125,60 @@ For my TV Dashboard project, keeping Vault as foundational infrastructure provid
 4. **Production patterns** should inform learning project decisions
 
 The goal isn't perfect GitOps coverage—it's building systems that are **reliable, maintainable, and appropriate for their context**.
+
+## Infrastructure Separation (October 2025 Update)
+
+After deploying to my homelab, I further refined the infrastructure boundaries by **moving Layer 0 resources to a separate repository**.
+
+### What Changed
+
+**Before**: Vault and External Secrets manifests lived in this repo (`k8s-gitops/base/vault/`, `k8s-gitops/base/external-secrets/`) but weren't managed by ArgoCD.
+
+**After**: All Layer 0 infrastructure moved to the [homelab repository](https://github.com/navillasa/homelab):
+- `homelab/k8s/vault/` - Vault deployment manifests
+- `homelab/k8s/external-secrets/` - ClusterSecretStore and ServiceAccounts
+
+### Why This Is Better
+
+1. **Clearer Boundaries**: Application repo (`tv-dashboard-k8s`) contains only application resources. Infrastructure repo (`homelab`) contains cluster-wide resources.
+
+2. **Reusability**: When I add a second project, it references the same Vault and ClusterSecretStore from the homelab repo, not duplicated infrastructure.
+
+3. **Easier Onboarding**: If someone clones `tv-dashboard-k8s` to deploy their own TV dashboard, they don't get Vault manifests they don't need.
+
+4. **Matches Mental Model**: The homelab repo represents "my cluster and its infrastructure". Application repos represent "things running on the cluster".
+
+### How It Works Now
+
+```
+homelab/ (github.com/navillasa/homelab)
+├── k8s/
+│   ├── vault/              # Layer 0: Vault deployment
+│   │   └── *.yaml
+│   └── external-secrets/   # Layer 0: ClusterSecretStore, ServiceAccounts
+│       └── *.yaml
+│
+tv-dashboard-k8s/ (this repo)
+└── k8s-gitops/
+    └── overlays/
+        └── prod/
+            ├── external-secret-database.yaml  # References ClusterSecretStore from homelab
+            └── external-secret-api.yaml       # References ClusterSecretStore from homelab
+```
+
+**Deployment sequence**:
+1. Deploy Vault: `kubectl apply -k homelab/k8s/vault`
+2. Configure Vault (init, unseal, create policies)
+3. Deploy External Secrets infrastructure: `kubectl apply -f homelab/k8s/external-secrets/`
+4. Deploy application via ArgoCD: references existing ClusterSecretStore
+
+### Lessons Learned
+
+- **Repository boundaries should match operational boundaries** - infrastructure managed separately from applications
+- **Layer 0 should be truly foundational** - if multiple projects use it, it doesn't belong in a single project's repo
+- **Documentation matters** - clear READMEs in the infrastructure repo explain what's deployed and why
+
+This pattern scales well: when I add more projects (e.g., a home automation dashboard, media server management UI), they'll all reference the same Layer 0 infrastructure from the homelab repo.
 
 ---
 
