@@ -3,9 +3,9 @@ kind: Ingress
 metadata:
   name: tv-dashboard-ingress
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
+  ingressClassName: public
   tls:
   - hosts:
     - tv-hub.navillasa.dev
