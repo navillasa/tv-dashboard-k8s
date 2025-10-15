@@ -8,6 +8,12 @@ spec:
       containers:
       - name: postgres
         env:
+        - name: POSTGRES_DB
+          value: null
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret-vault
+              key: database
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
@@ -18,11 +24,6 @@ spec:
             secretKeyRef:
               name: postgres-secret-vault
               key: password
-        - name: POSTGRES_DB
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret-vault
-              key: database
         resources:
           requests:
             memory: "256Mi"
