@@ -12,17 +12,17 @@ spec:
           value: null
           valueFrom:
             secretKeyRef:
-              name: postgres-secret-vault
+              name: postgres-secret
               key: database
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
-              name: postgres-secret-vault
+              name: postgres-secret
               key: username
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: postgres-secret-vault
+              name: postgres-secret
               key: password
         resources:
           requests:

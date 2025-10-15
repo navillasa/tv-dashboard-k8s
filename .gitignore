@@ -11,5 +11,8 @@ DEMO_GUIDE.md
 *unseal*key*
 *.pem
 *.key
-*secret*
 vault-keys.txt
+secrets.yaml
+secrets/
+*.secret
+.notes/

@@ -17,8 +17,7 @@ labels:
 
 patches:
   - path: postgres-homelab-patch.yaml
-  - path: backend-homelab-patch.yaml
-  - path: frontend-homelab-patch.yaml
+  - path: frontend-patch.yaml
   - path: ingress-homelab-patch.yaml
 
 images:

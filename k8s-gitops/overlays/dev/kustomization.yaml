@@ -18,6 +18,8 @@ labels:
 
 patches:
   - path: postgres-dev-patch.yaml
+  - path: postgres-storage-patch.yaml
+  - path: frontend-patch.yaml
   - path: backend-dev-patch.yaml
   - path: ingress-cert-patch.yaml
 
