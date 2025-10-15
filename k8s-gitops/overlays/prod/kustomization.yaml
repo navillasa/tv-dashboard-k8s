@@ -21,6 +21,7 @@ patches:
   - path: backend-homelab-patch.yaml
   - path: frontend-homelab-patch.yaml
   - path: ingress-homelab-patch.yaml
+  - path: cluster-secret-store-patch.yaml
 
 images:
   - name: tv-dashboard-backend
