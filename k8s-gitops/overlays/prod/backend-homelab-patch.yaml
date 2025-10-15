@@ -9,28 +9,32 @@ spec:
       containers:
       - name: backend
         env:
+        - name: PORT
+          value: "4000"
+        - name: PGHOST
+          value: "postgres"
+        - name: PGUSER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret-vault
+              key: username
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret-vault
+              key: password
+        - name: PGDATABASE
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret-vault
+              key: database
+        - name: PGPORT
+          value: "5432"
         - name: TMDB_API_KEY
           valueFrom:
             secretKeyRef:
               name: api-secrets-vault
               key: TMDB_API_KEY
-        - name: DATABASE_URL
-          value: "postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@homelab-postgres:5432/$(POSTGRES_DB)"
-        - name: POSTGRES_USER
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret-vault
-              key: username
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret-vault
-              key: password
-        - name: POSTGRES_DB
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret-vault
-              key: database
         resources:
           requests:
             memory: "256Mi"

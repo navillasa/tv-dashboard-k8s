@@ -8,6 +8,9 @@ spec:
     spec:
       containers:
       - name: frontend
+        env:
+        - name: BACKEND_SERVICE
+          value: "prod-backend-service"
         resources:
           requests:
             memory: "128Mi"
