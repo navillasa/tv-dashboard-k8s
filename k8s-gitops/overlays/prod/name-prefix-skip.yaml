@@ -1,3 +1,4 @@
 namePrefix:
-- kind: ClusterSecretStore
+- path: spec/secretStoreRef/name
+  kind: ExternalSecret
   skip: true
