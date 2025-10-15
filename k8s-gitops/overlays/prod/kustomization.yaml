@@ -11,6 +11,9 @@ resources:
 
 namePrefix: prod-
 
+configurations:
+  - name-prefix-skip.yaml
+
 labels:
   - pairs:
       environment: prod
