@@ -71,20 +71,21 @@ async function fetchShowDetailsFromTVmaze(showId: string) {
 }
 
 export async function fetchFromApiTwo(platforms: string[]): Promise<Show[]> {
-  const validPlatforms = platforms.length > 0
-    ? platforms
-        .map(p => p.toLowerCase())
-        .filter(p => PLATFORM_NETWORKS[p])
-    : Object.keys(PLATFORM_NETWORKS);
-  if (!validPlatforms.length) return [];
+  try {
+    const validPlatforms = platforms.length > 0
+      ? platforms
+          .map(p => p.toLowerCase())
+          .filter(p => PLATFORM_NETWORKS[p])
+      : Object.keys(PLATFORM_NETWORKS);
+    if (!validPlatforms.length) return [];
 
-  // Get all shows airing soon
-  const start = Date.now();
-  const res = await fetch("https://api.tvmaze.com/schedule?country=US");
-  externalApiRequests.labels('tvmaze', res.ok ? 'success' : 'error').inc();
-  const data = await res.json();
-  const duration = (Date.now() - start) / 1000;
-  externalApiDuration.labels('tvmaze').observe(duration);
+    // Get all shows airing soon
+    const start = Date.now();
+    const res = await fetch("https://api.tvmaze.com/schedule?country=US");
+    externalApiRequests.labels('tvmaze', res.ok ? 'success' : 'error').inc();
+    const data = await res.json();
+    const duration = (Date.now() - start) / 1000;
+    externalApiDuration.labels('tvmaze').observe(duration);
 
   const basicShows: any[] = [];
   for (const showEntry of data) {
@@ -109,19 +110,23 @@ export async function fetchFromApiTwo(platforms: string[]): Promise<Show[]> {
     }
   }
 
-  // Get top 10 shows per platform and fetch detailed info
-  const enhancedShows = await Promise.all(
-    validPlatforms.flatMap(platform => {
-      const platformShows = basicShows.filter((s: any) => s.platform === platform).slice(0, 10);
-      return platformShows.map(async (show: any) => {
-        const details = await fetchShowDetailsFromTVmaze(show.id);
-        return {
-          ...show,
-          ...details
-        };
-      });
-    })
-  );
+    // Get top 10 shows per platform and fetch detailed info
+    const enhancedShows = await Promise.all(
+      validPlatforms.flatMap(platform => {
+        const platformShows = basicShows.filter((s: any) => s.platform === platform).slice(0, 10);
+        return platformShows.map(async (show: any) => {
+          const details = await fetchShowDetailsFromTVmaze(show.id);
+          return {
+            ...show,
+            ...details
+          };
+        });
+      })
+    );
 
-  return enhancedShows;
+    return enhancedShows;
+  } catch (err) {
+    console.error("[apiTwo] ERROR fetching from TVmaze:", err);
+    return [];
+  }
 }
