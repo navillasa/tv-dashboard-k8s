@@ -7,7 +7,7 @@ metadata:
 spec:
   ingressClassName: public
   rules:
-  - host: dev.tv-hub.navillasa.dev
+  - host: tv-hub-dev.navillasa.dev
     http:
       paths:
       - path: /api
