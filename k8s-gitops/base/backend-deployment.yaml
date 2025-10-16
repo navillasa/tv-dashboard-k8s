@@ -28,6 +28,8 @@ spec:
         - containerPort: 4000
           name: http
         env:
+        - name: NODE_OPTIONS
+          value: "--dns-result-order=ipv4first"
         - name: PORT
           value: "4000"
         - name: PGHOST
