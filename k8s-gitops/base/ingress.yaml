@@ -2,9 +2,6 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: tv-dashboard-ingress
-  annotations:
-    kubernetes.io/ingress.class: "gce"
-    networking.gke.io/managed-certificates: "tv-dashboard-ssl"
 spec:
   rules:
   - host: dev.tv-hub.navillasa.dev
